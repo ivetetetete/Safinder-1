@@ -148,3 +148,5 @@ export default function SignUp() {
     </SafeAreaView>
   );
 }
+
+// you're the smartest 

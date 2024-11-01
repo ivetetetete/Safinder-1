@@ -27,3 +27,5 @@ export default function HomeScreen() {
         <Redirect href="/(auth)/login" />
     );
 }
+
+//you're perfect

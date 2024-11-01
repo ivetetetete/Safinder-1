@@ -7,3 +7,5 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+//you're amazing
