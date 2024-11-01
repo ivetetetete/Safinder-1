@@ -1,37 +1,46 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import './global.css';
+import { auth } from '../library/firebaseConfig';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const RootLayout = () => {
+    const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user: any) => {
+            setCurrentUser(user);
+            setLoading(false);
+        });
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+        return () => unsubscribe();
+    }, []);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (loading) {
+        return null;
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+    return (
+        <Stack>
+            {currentUser ? (
+                <Stack.Screen
+                    name="(tabs)"
+                    options={{
+                        headerShown: false,
+                        title: 'Volver',
+                    }}
+                />
+            ) : (
+                <Stack.Screen
+                    name="(auth)"
+                    options={{
+                        headerShown: false,
+                        title: 'Volver',
+                    }}
+                />
+            )}
+        </Stack>
+    );
+};
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
-}
+export default RootLayout;
