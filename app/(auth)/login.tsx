@@ -25,40 +25,39 @@ export default function Login() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-violet-400">
+    <SafeAreaView className="flex-1 bg-[#FFFFD8]">
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 justify-center px-6"
       >
-        <View className="bg-gray-800 rounded-3xl p-8 shadow-lg">
-          <Text className="text-4xl font-bold text-indigo-400 mb-6 text-center">Welcome back</Text>
-          <Text className="text-4xl font-bold text-indigo-400 mb-6 text-center">to Safinder</Text>
+        <View className="bg-[#FFEA8A] rounded-3xl p-8 shadow-lg">
+          <Text className="text-4xl font-bold text-[#FF7DB0] mb-6 text-center">Welcome to Safinder</Text>
           
           {errorMessage ? (
             <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
           ) : null}
 
           <View className="space-y-2">
-            <View className="border border-gray-600 rounded-xl mb-3">
+            <View className="border border-[#FF7DB0] rounded-xl mb-3">
               <TextInput
                 placeholder="email"
                 value={email}
                 onChangeText={setEmail}
                 className="px-4 py-3 text-white"
-                placeholderTextColor="rgba(255, 255, 255, 0.7)"
+                placeholderTextColor="#FFA876"
                 autoCapitalize="none"
                 keyboardType="email-address"
               />
             </View>
 
-            <View className="border border-gray-600 rounded-xl flex-row items-center">
+            <View className="border border-[#FF7DB0] rounded-xl flex-row items-center">
               <TextInput
                 placeholder="password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={passwordHidden}
                 className="flex-1 px-4 py-3 text-white"
-                placeholderTextColor="rgba(255, 255, 255, 0.7)"
+                placeholderTextColor="#FFA876"
                 autoCapitalize="none"
               />
               <TouchableOpacity onPress={() => setPasswordHidden(!passwordHidden)} className="pr-4">
@@ -73,7 +72,7 @@ export default function Login() {
 
           <TouchableOpacity
             onPress={handleLogin}
-            className="bg-indigo-600 mt-6 py-3 rounded-2xl"
+            className="bg-[#FFA876] mt-6 py-3 rounded-2xl"
           >
             <Text className="text-white font-bold text-center text-lg">Login</Text>
           </TouchableOpacity>
