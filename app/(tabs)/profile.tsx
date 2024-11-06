@@ -51,15 +51,59 @@ const Profile = () => {
           </G>
         </Svg>
       </View>
-      <View className='p-5 flex justify-center items-center'>
-        <Image
-          className='w-40 h-40 rounded-full'
-          source={require('../../assets/images/blank-profile.png')} />
-          <Text className='py-3 font-bold text-2xl'>Ivette Sanjurjo</Text>
+      <View className='p-5 '>
+        <View className='flex justify-center items-center'>
+          <Image
+            className='w-40 h-40 rounded-full '
+            source={require('../../assets/images/blank-profile.png')} />
 
-          <View>
-          
+          {/* <Text className='py-3 font-bold text-2xl'>Ivette Sanjurjo</Text>
+        <Text>Lorem ipsum, lorem ipsum, lorem ipsum, lorem ipsum</Text> */}
+          <Text className='py-3 font-bold text-2xl'>Ivette Sanjurjo</Text>
+          <Text>Lorem ipsum, lorem ipsum, lorem ipsum, lorem ipsum</Text>
+
+          <View className='flex flex-row gap-x-2 mt-5'>
+            <TouchableOpacity className='border-2 border-red-400 rounded-full p-3 w-28'>
+              <Text className='text-center'>Follow</Text>
+            </TouchableOpacity>
+            <TouchableOpacity className='bg-red-400 rounded-full p-3 w-28'>
+              <Text className='text-center'>SM</Text>
+            </TouchableOpacity>
           </View>
+
+          <View className='flex flex-row gap-x-6 mt-5'>
+            <View className='flex justify-center items-center '>
+              <Text className='color-slate-400'>900</Text>
+              <Text className='color-slate-400'>Followers</Text>
+            </View>
+            <View className='flex justify-center items-center'>
+              <Text className='color-slate-400'>15</Text>
+              <Text className='color-slate-400'>Following</Text>
+            </View>
+            <View className='flex justify-center items-center'>
+              <Text className='color-slate-400'>165</Text>
+              <Text className='color-slate-400'>Posts</Text>
+            </View>
+          </View>
+        </View>
+
+        <View className='mt-6'>
+          <Text className='font-bold'>Posts</Text>
+          <View className='flex flex-row gap-x-3'>
+            <View className='bg-red-500 w-28 h-40 rounded-xl'></View>
+            <View className='bg-red-500 w-28 h-40 rounded-xl'></View>
+            <View className='bg-red-500 w-28 h-40 rounded-xl'></View>
+          </View>
+        </View>
+
+        <View className='mt-6'>
+          <Text className='font-bold'>Social media</Text>
+          <View className='flex flex-row gap-x-3'>
+            <View className='bg-red-500 w-16 h-16 rounded-xl'></View>
+            <View className='bg-red-500 w-16 h-16 rounded-xl'></View>
+            <View className='bg-red-500 w-16 h-16 rounded-xl'></View>
+          </View>
+        </View>
       </View>
       <View>
         <TouchableOpacity
