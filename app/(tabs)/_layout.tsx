@@ -41,6 +41,26 @@ const TabsLayout = () => {
                 }}
             />
             <Tabs.Screen
+                name="map"
+                options={{
+                    headerShown: false,
+                    title: 'map',
+                    tabBarIcon: ({ color, size }) => (
+                        <Entypo name="map" color={color} size={30} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="chat"
+                options={{
+                    headerShown: false,
+                    title: 'chat',
+                    tabBarIcon: ({ color, size }) => (
+                        <Entypo name="message" color={color} size={30} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="profile"
                 options={{
                     headerShown: false,

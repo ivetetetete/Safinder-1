@@ -30,26 +30,34 @@ export default function SignUp() {
       setErrorMessage("All fields are required");
       return;
     }
-
+  
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
       return;
     }
-
+  
     try {
+      console.log("Attempting to create user with email:", email);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
-      await setDoc(doc(db, 'users', user.uid), {
-        userId: user.uid,
-        username: username,
-        email: email,
-      });
-      console.log("User signed up successfully:", user.uid);
-      router.push('/(tabs)/home');
-    } catch (error: any) {
-      console.error("Error signing up:", error.message);
-      setErrorMessage("Error signing up. Please try again.");
+      console.log("User created successfully:", user.uid);
+  
+      console.log("Attempting to create Firestore document");
+      try {
+        await setDoc(doc(db, 'users', user.uid), {
+          userId: user.uid,
+          username: username,
+          email: email,
+        });
+        console.log("Firestore document created successfully");
+        router.push('/(tabs)/home');
+      } catch (firestoreError: any) {
+        console.error("Firestore error:", firestoreError.code, firestoreError.message);
+        setErrorMessage(`Error creating user profile: ${firestoreError.message}`);
+      }
+    } catch (authError: any) {
+      console.error("Authentication error:", authError.code, authError.message);
+      setErrorMessage(`Error creating user: ${authError.message}`);
     }
   };
 
