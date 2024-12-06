@@ -50,7 +50,10 @@ export default function SignUp() {
           email: email,
         });
         console.log("Firestore document created successfully");
-        router.push('/(tabs)/home');
+        router.push({
+          pathname: '/userData',
+          params: { userId: user.uid }
+        });      
       } catch (firestoreError: any) {
         console.error("Firestore error:", firestoreError.code, firestoreError.message);
         setErrorMessage(`Error creating user profile: ${firestoreError.message}`);

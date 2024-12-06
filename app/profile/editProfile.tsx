@@ -8,7 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from "../../library/firebaseConfig";
 
 
-const Profile = () => {
+const EditProfile = () => {
   const router = useRouter();
   const auth = getAuth();
   const [user, setUser] = useState(auth.currentUser);
@@ -28,6 +28,9 @@ const Profile = () => {
       console.error('Error logging out:', error);
     }
   };
+
+  //BORRAR CUENTA
+  //LOG OUT
 
   useEffect(() => {
     fetchUserData();
@@ -145,6 +148,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
-
-//you're the best
+export default EditProfile;
