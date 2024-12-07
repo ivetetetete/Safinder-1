@@ -15,19 +15,20 @@ export default function HomeScreen() {
     }
   };
   return (
-<>
-<View className="flex-1 items-center justify-center">
-      <Text className="font-bold">Welcome to Safinder!</Text>
-    </View>
+    <View className='flex-1 items-center justify-center'>
+      <View className="bg-pink-500 p-5 rounded-xl my-3">
+        <Text className="text-white text-2xl">Countdown to next test:</Text>
+        <Text className="font-bold text-white text-3xl text-right">3 days 2 hours 40 min</Text>
+      </View>
 
-<View>
-<TouchableOpacity
-  onPress={handleLogout}
-  className="bg-red-400 py-3 rounded-lg mb-8"
->
-  <Text className="text-white text-center font-bold px-6 py-2">Logout</Text>
-</TouchableOpacity>
-</View></>
+      <View>
+        <TouchableOpacity
+          onPress={handleLogout}
+          className="bg-red-400 py-3 rounded-lg mb-8"
+        >
+          <Text className="text-white text-center font-bold px-6 py-2">Logout</Text>
+        </TouchableOpacity>
+      </View></View>
   );
 }
 
