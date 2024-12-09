@@ -31,6 +31,7 @@ const RootLayout = () => {
                     }}
                 />
             ) : (
+                <>
                 <Stack.Screen
                     name="(auth)"
                     options={{
@@ -38,6 +39,14 @@ const RootLayout = () => {
                         title: 'Volver',
                     }}
                 />
+                <Stack.Screen
+                    name="profile"
+                    options={{
+                        headerShown: false,
+                        title: 'Volver',
+                    }}
+                />
+                </>
             )}
         </Stack>
     );
