@@ -6,7 +6,6 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'react-native';
 
 export default function Login() {
   const router = useRouter();
