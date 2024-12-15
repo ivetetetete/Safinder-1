@@ -6,6 +6,7 @@ import { db } from "../../library/firebaseConfig";
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function UserData() {
   const { userId } = useLocalSearchParams();
@@ -66,7 +67,8 @@ export default function UserData() {
   };
 
   return (
-    <View className='bg-[#FFEA8A] h-screen' >
+   <SafeAreaView className="flex-1 h-screen bg-[#FFEA8A]">
+     <View className='bg-[#FFEA8A]' >
       <Text className='font-bold text-pink-500 text-2xl text-center py-3'>Sobre ti</Text>
 
       <View className='gap-y-3 px-3'>
@@ -143,6 +145,7 @@ export default function UserData() {
         <Text className='text-center text-white'>Save Details</Text>
       </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 }
 

@@ -52,7 +52,7 @@ export default function SignUp() {
         });
         console.log("Firestore document created successfully");
         router.push({
-          pathname: '/profile/userData',
+          pathname: '/(profile)/userData',
           params: { userId: user.uid }
         });
       } catch (firestoreError: any) {

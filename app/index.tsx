@@ -7,7 +7,7 @@ export default function HomeScreen() {
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user: any )=> {
+        const unsubscribe = auth.onAuthStateChanged((user: any) => {
             setCurrentUser(user);
             setLoading(false);
         });
@@ -21,7 +21,7 @@ export default function HomeScreen() {
 
     return currentUser ? (
         <Redirect href={{
-          pathname: "/(tabs)/home",
+            pathname: "/(tabs)/home",
         }} />
     ) : (
         <Redirect href="/(auth)/login" />

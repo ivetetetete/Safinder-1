@@ -7,6 +7,7 @@ import Svg, { G, Path } from "react-native-svg";
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from "../../library/firebaseConfig";
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const Profile = () => {
@@ -51,16 +52,16 @@ const Profile = () => {
   };
 
   const goSettings = () => {
-    router.push('../profile/settings');
+    router.push('../(profile)/settings');
   }
 
   const goEditProfile = () => {
-    router.push('../profile/editProfile');
+    router.push('../(profile)/editProfile');
   }
 
   return (
-    <ScrollView className=''>
-      <View className="bg-[#FFA876]">
+    <SafeAreaView className='bg-[#FFA876] -mb-10'>
+      <ScrollView >
         <View className='flex flex-row pt-10 px-3 h-24 w-full justify-between items-center'>
           <Text className="text-xl font-bold text-white">Profile</Text>
           <View className='flex flex-row gap-4'>
@@ -149,8 +150,10 @@ const Profile = () => {
           </View>
 
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+
+    </SafeAreaView>
+
   );
 };
 

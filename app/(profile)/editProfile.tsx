@@ -6,6 +6,7 @@ import 'tailwindcss/tailwind.css';
 import Svg, { G, Path } from "react-native-svg";
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../library/firebaseConfig";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const EditProfile = () => {
@@ -82,33 +83,35 @@ const EditProfile = () => {
     };
 
     return (
-        <View className='bg-[#FFEA8A] p-5 h-screen'>
-            <Text className='text-center font-bold text-xl mb-2'>EditProfile</Text>
-            <View className='gap-y-2'>
-                <TextInput
-                    placeholder="Nombre"
-                    value={name}
-                    onChangeText={setName}
-                    className="px-4 py-3 border border-pink-500 rounded-xl disabled:opacity-40"
-                    //readOnly
-                    placeholderTextColor={"#FFA876"}
-                />
-                <TextInput
-                    placeholder="Apellidos"
-                    value={surname}
-                    onChangeText={setSurname}
-                    className="px-4 py-3 border border-pink-500 rounded-xl disabled:opacity-40"
-                    // readOnly
-                    placeholderTextColor={"#FFA876"}
-                />
+        <SafeAreaView className='bg-[#FFEA8A]'>
+            <View className=' p-5 h-screen'>
+                <Text className='text-center font-bold text-xl mb-2'>EditProfile</Text>
+                <View className='gap-y-2'>
+                    <TextInput
+                        placeholder="Nombre"
+                        value={name}
+                        onChangeText={setName}
+                        className="px-4 py-3 border border-pink-500 rounded-xl disabled:opacity-40"
+                        //readOnly
+                        placeholderTextColor={"#FFA876"}
+                    />
+                    <TextInput
+                        placeholder="Apellidos"
+                        value={surname}
+                        onChangeText={setSurname}
+                        className="px-4 py-3 border border-pink-500 rounded-xl disabled:opacity-40"
+                        // readOnly
+                        placeholderTextColor={"#FFA876"}
+                    />
+                </View>
+                <TouchableOpacity
+                    onPress={saveDetails}
+                    className="bg-pink-500 py-3 rounded-lg mb-8"
+                >
+                    <Text className="text-white text-center font-bold px-6 py-2">Save</Text>
+                </TouchableOpacity>
             </View>
-            <TouchableOpacity
-                onPress={saveDetails}
-                className="bg-pink-500 py-3 rounded-lg mb-8"
-            >
-                <Text className="text-white text-center font-bold px-6 py-2">Save</Text>
-            </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 };
 

@@ -21,7 +21,10 @@ const RootLayout = () => {
     }
 
     return (
-        <Stack>
+        <Stack
+            screenOptions={{
+                headerShown: false,
+            }}>
             {currentUser ? (
                 <Stack.Screen
                     name="(tabs)"
@@ -31,22 +34,13 @@ const RootLayout = () => {
                     }}
                 />
             ) : (
-                <>
-                <Stack.Screen
-                    name="(auth)"
-                    options={{
-                        headerShown: false,
-                        title: 'Volver',
-                    }}
-                />
-                <Stack.Screen
-                    name="profile"
-                    options={{
-                        headerShown: false,
-                        title: 'Volver',
-                    }}
-                />
-                </>
+                    <Stack.Screen
+                        name="(auth)"
+                        options={{
+                            headerShown: false,
+                            title: 'Volver',
+                        }}
+                    />
             )}
         </Stack>
     );
