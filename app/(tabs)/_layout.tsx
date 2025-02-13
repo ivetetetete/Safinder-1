@@ -7,7 +7,7 @@ const TabsLayout = () => {
         <Tabs
             screenOptions={{
                 tabBarStyle: {
-                    backgroundColor: '#A78BFA', 
+                    backgroundColor: '#FFFFD8', 
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 5 },
                     shadowOpacity: 0.3,
@@ -15,8 +15,8 @@ const TabsLayout = () => {
                     elevation: 10,
                     height: 85,
                 },
-                tabBarActiveTintColor: '#dfd3e8',
-                tabBarInactiveTintColor: '#2A2C38',
+                tabBarActiveTintColor: '#FF7DB0',
+                tabBarInactiveTintColor: '#FFA876',
                 tabBarLabelStyle: {
                     fontSize: 12,
                     marginBottom: -5,

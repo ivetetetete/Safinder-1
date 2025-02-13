@@ -60,11 +60,11 @@ const Profile = () => {
   }
 
   return (
-    <SafeAreaView className='bg-[#FFA876] -mb-10'>
-      <ScrollView >
-        <View className='flex flex-row pt-10 px-3 h-24 w-full justify-between items-center'>
-          <Text className="text-xl font-bold text-white">Profile</Text>
-          <View className='flex flex-row gap-4'>
+
+    <SafeAreaView className='flex-1 h-screen bg-[#FFFFD8] p-3'>
+      <ScrollView>
+        {/* <View className='flex flex-row pt-10 px-3 h-24 w-full justify-between items-center'>
+          <View className='flex flex-row gap-4 '>
             <TouchableOpacity onPress={goEditProfile}>
               <Ionicons name="pencil-outline" size={20} color="white" />
             </TouchableOpacity>
@@ -83,7 +83,6 @@ const Profile = () => {
               </Svg>
             </TouchableOpacity>
           </View>
-
         </View>
         <View>
           <View className='flex justify-center items-center'>
@@ -149,9 +148,29 @@ const Profile = () => {
             </View>
           </View>
 
+        </View> */}
+        <View>
+          <View className='flex flex-row items-center gap-x-3 mb-5'>
+            <Image
+              className='w-40 h-40 rounded-full border-8 border-white'
+              source={require('../../assets/images/blank-profile.png')} />
+            <View>
+              <Text className='text-3xl font-bold'>Ivette Sanjurjo</Text>
+              <Text className='text-xl'>21 years old</Text>
+              <Text className='text-xl'>Barcelona</Text>
+            </View>
+          </View>
+          <View className='flex items-center mt-5'>
+            <Text className='text-lg'>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum </Text>
+          </View>
+          <View className='border-2 border-[#FFD43B] rounded-lg p-3 mt-5'>
+            <View className='bg-[#FFD43B] opacity-50 px-3 rounded-full max-w-24 w-fit-content'>
+              <Text className='text-lg text-[#FFFFD8]'>Tenis</Text>
+            </View>
+          </View>
+
         </View>
       </ScrollView>
-
     </SafeAreaView>
 
   );
