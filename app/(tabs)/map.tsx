@@ -26,6 +26,8 @@ const Map = () => {
   const [description, setDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [location, setLocation] = useState('');
+
 
   const [events, setEvents] = useState<Event[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -39,6 +41,19 @@ const Map = () => {
     const longitud = Math.random() * (3.3 - 0.15) + 0.15;
     return { latitude: latitud, longitude: longitud };
   }
+
+  //modal evento
+  const [modalEventVisible, setModalEventVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  const handleMarkerPress = (event: Event) => {
+    console.log('Marker pressed');
+    setSelectedEvent(event);
+  };
+
+
+  console.log(modalEventVisible);
+
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -131,24 +146,45 @@ const Map = () => {
         }}
       >
         {events.map((event) => (
-          <Marker
-          key={event.id}
-          coordinate={{
-            latitude: event.latitude,
-            longitude: event.longitude,
-          }}
-          title={event.title}
-          description={event.description}
-        >
-          <View className='w-28 p-5 bg-[#FFD43B] rounded-lg'>
-            <Text className='text-center font-bold'>{event.title}</Text>
-            <Text className='text-center'>{event.description}</Text>
-          </View>
-        </Marker>
+          <React.Fragment key={event.id}>
+            <Marker
+              coordinate={{
+                latitude: event.latitude,
+                longitude: event.longitude,
+              }}
+              //onPress={() => handleMarkerPress(event)}
+            >
+              <View className='w-28 p-5 bg-[#FFD43B] rounded-lg'>
+                <Text className='text-center font-bold'>{event.title}</Text>
+                <Text className='text-center'>{event.description}</Text>
+              </View>
+            </Marker>
+            {/* <Modal
+              animationType="slide"
+              transparent={true}
+              visible={selectedEvent !== null}
+              onRequestClose={() => setSelectedEvent(null)}
+            >
+              {selectedEvent && (
+                <View className='flex-1 justify-center items-center bg-black bg-opacity-50'>
+                  <View className='bg-white p-5 rounded-lg'>
+                    <Text className='text-lg font-bold mb-2'>{selectedEvent.title}</Text>
+                    <Text className='mb-4'>{selectedEvent.description}</Text>
+                    <TouchableOpacity
+                      onPress={() => setSelectedEvent(null)}
+                      className='bg-[#FFD43B] py-2 px-4 rounded'
+                    >
+                      <Text className='text-center'>Close</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </Modal> */}
+          </React.Fragment>
         ))}
       </MapView>
 
-      {/* Floating Button */}
+      {/* Botón crear evento */}
       <View className="absolute z-30 right-8 top-12">
         <TouchableOpacity onPress={toggleModal}>
           <Ionicons name={'add-circle-outline'} size={36} color="white" />
@@ -172,6 +208,12 @@ const Map = () => {
                 value={description}
                 onChangeText={setDescription}
                 multiline
+                className="px-4 py-3 border border-gray-300 rounded-md w-full"
+              />
+              <TextInput
+                placeholder="Donde"
+                value={location}
+                onChangeText={setLocation}
                 className="px-4 py-3 border border-gray-300 rounded-md w-full"
               />
 

@@ -21,14 +21,15 @@ export default function HomeScreen() {
         <Text className="font-bold text-white text-3xl text-right">3 days 2 hours 40 min</Text>
       </View>
 
-      <View>
+      {/* <View>
         <TouchableOpacity
           onPress={handleLogout}
           className="bg-red-400 py-3 rounded-lg mb-8"
         >
           <Text className="text-white text-center font-bold px-6 py-2">Logout</Text>
         </TouchableOpacity>
-      </View></View>
+      </View> */}
+    </View>
   );
 }
 
