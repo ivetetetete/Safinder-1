@@ -3,6 +3,12 @@ import { Stack } from 'expo-router';
 import './global.css';
 import { auth } from '../library/firebaseConfig';
 
+declare global {
+    interface Window {
+      frameworkReady?: () => void;
+    }
+  }
+
 const RootLayout = () => {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
@@ -26,21 +32,30 @@ const RootLayout = () => {
                 headerShown: false,
             }}>
             {currentUser ? (
-                <Stack.Screen
-                    name="(tabs)"
-                    options={{
-                        headerShown: false,
-                        title: 'Volver',
-                    }}
-                />
-            ) : (
+                <>
                     <Stack.Screen
-                        name="(auth)"
+                        name="(tabs)"
                         options={{
                             headerShown: false,
                             title: 'Volver',
                         }}
                     />
+                    <Stack.Screen
+                        name="chat"
+                        options={{
+                            headerShown: false,
+                            title: 'Volver',
+                        }}
+                    />
+                </>
+            ) : (
+                <Stack.Screen
+                    name="(auth)"
+                    options={{
+                        headerShown: false,
+                        title: 'Volver',
+                    }}
+                />
             )}
         </Stack>
     );
