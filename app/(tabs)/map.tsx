@@ -11,6 +11,7 @@ import { auth, db } from "../../library/firebaseConfig";
 
 interface Event {
   id: string;
+  idUser: string;
   title: string;
   description: string;
   latitude: number;
@@ -33,8 +34,13 @@ const Map = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
+
+  const toggleModalEvent = () => {
+    setIsModalEventVisible(!isModalEventVisible)
+  };
 
   function getRandomCoordinatesInCatalonia() {
     const latitud = Math.random() * (42.9 - 40.5) + 40.5;
@@ -43,29 +49,25 @@ const Map = () => {
   }
 
   //modal evento
-  const [modalEventVisible, setModalEventVisible] = useState(false);
+  const [isModalEventVisible, setIsModalEventVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-
-  const handleMarkerPress = (event: Event) => {
-    console.log('Marker pressed');
-    setSelectedEvent(event);
-  };
-
-
-  console.log(modalEventVisible);
 
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
+        setLoading(true);
+
         const eventsCollection = collection(db, 'events');
         const querySnapshot = await getDocs(eventsCollection);
 
         const fetchedEvents: Event[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
+          console.log('Data:', data);
           fetchedEvents.push({
             id: doc.id,
+            idUser: data.userId,
             title: data.title || 'Sin título',
             description: data.description || '',
             latitude: data.x,
@@ -73,14 +75,27 @@ const Map = () => {
           });
         });
 
+        console.log('Fetched events:', fetchedEvents);
         setEvents(fetchedEvents);
       } catch (error) {
         console.error('Error fetching events: ', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    console.log('Events state updated:', events);
+  }, [events]);
+
+
+  const handleMarkerPress = (event: Event) => {
+    setSelectedEvent(event);
+    setIsModalEventVisible(!isModalEventVisible);
+  };
 
   const onChangeDate = (event: any, selected: Date | undefined) => {
     const currentDate = selected || selectedDate;
@@ -96,9 +111,12 @@ const Map = () => {
 
   const createEvent = () => {
     const userId = user?.uid;
+    const userIdName = user?.displayName;
     const { latitude, longitude } = getRandomCoordinatesInCatalonia();
 
+    console.log('userIdName:', userIdName);
     const newEvent = {
+      idUser: userId,
       title: title || 'Sin título',
       description: description || '',
       x: latitude,
@@ -116,6 +134,7 @@ const Map = () => {
           ...prevEvents,
           {
             id: docRef.id,
+            idUser: userId || '',
             title: newEvent.title,
             description: newEvent.description,
             latitude: newEvent.x,
@@ -135,117 +154,143 @@ const Map = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <MapView
-        style={{ flex: 1 }}
-        initialRegion={{
-          latitude: 41.8204600,
-          longitude: 1.8676800,
-          latitudeDelta: 2.5,
-          longitudeDelta: 2.5,
-        }}
-      >
-        {events.map((event) => (
-          <React.Fragment key={event.id}>
-            <Marker
-              coordinate={{
-                latitude: event.latitude,
-                longitude: event.longitude,
-              }}
-              //onPress={() => handleMarkerPress(event)}
-            >
-              <View className='w-28 p-5 bg-[#FFD43B] rounded-lg'>
-                <Text className='text-center font-bold'>{event.title}</Text>
-                <Text className='text-center'>{event.description}</Text>
-              </View>
-            </Marker>
-            {/* <Modal
-              animationType="slide"
-              transparent={true}
-              visible={selectedEvent !== null}
-              onRequestClose={() => setSelectedEvent(null)}
-            >
-              {selectedEvent && (
-                <View className='flex-1 justify-center items-center bg-black bg-opacity-50'>
-                  <View className='bg-white p-5 rounded-lg'>
-                    <Text className='text-lg font-bold mb-2'>{selectedEvent.title}</Text>
-                    <Text className='mb-4'>{selectedEvent.description}</Text>
+    <>
+      {loading ? (
+        <Text>Loading events...</Text>
+      ) : (
+        <View className='flex-1'>
+          <MapView
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: 41.8204600,
+              longitude: 1.8676800,
+              latitudeDelta: 2.5,
+              longitudeDelta: 2.5,
+            }}
+          >
+            {events.map((event) => (
+              <Marker key={event.id}
+                //onPress={toggleModalEvent}
+                coordinate={{
+                  latitude: event.latitude,
+                  longitude: event.longitude,
+                }}
+                onPress={() => {
+                  handleMarkerPress(event);
+                  toggleModalEvent();
+                }}
+              >
+                <View className='w-28 p-5 bg-[#FFD43B] rounded-lg'
+                >
+                  <Text className='text-center font-bold'>{event.title}</Text>
+                  <Text className='text-center'>{event.description}</Text>
+                </View>
+              </Marker>
+            ))}
+          </MapView>
+
+          {/* Modal Event */}
+          <Modal
+            transparent={true}
+            visible={isModalEventVisible}
+            onRequestClose={toggleModalEvent}
+          >
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.5)]">
+                <View className="w-[90%] p-5 bg-white rounded-lg gap-y-3">
+                  <Text className="font-semibold text-lg mb-3 text-center">Evento</Text>
+                  <Text className="font-semibold text-lg mb-3 text-center">{selectedEvent?.idUser}</Text>
+                  <Text className="font-semibold text-lg mb-3 text-center">{selectedEvent?.title}</Text>
+                  <Text className="font-semibold text-lg mb-3 text-center">{selectedEvent?.description}</Text>
+                  <View className='flex flex-row gap-3 items-center'>
                     <TouchableOpacity
-                      onPress={() => setSelectedEvent(null)}
-                      className='bg-[#FFD43B] py-2 px-4 rounded'
+                      //onPress={toggleModalEvent}
+                      className="w-full bg-gray-200 justify-center items-center h-12 rounded-lg"
                     >
-                      <Text className='text-center'>Close</Text>
+                      <Text className="text-black font-semibold">Voy a ir!</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      //onPress={toggleModalEvent}
+                      className="w-full bg-gray-200 justify-center items-center h-12 rounded-lg"
+                    >
+                      <Text className="text-black font-semibold">Unirme al grupo</Text>
                     </TouchableOpacity>
                   </View>
+                  <TouchableOpacity
+                    onPress={toggleModalEvent}
+                    className="w-full bg-gray-200 justify-center items-center h-12 rounded-lg"
+                  >
+                    <Text className="text-black font-semibold">Cerrar</Text>
+                  </TouchableOpacity>
                 </View>
-              )}
-            </Modal> */}
-          </React.Fragment>
-        ))}
-      </MapView>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
 
-      {/* Botón crear evento */}
-      <View className="absolute z-30 right-8 top-12">
-        <TouchableOpacity onPress={toggleModal}>
-          <Ionicons name={'add-circle-outline'} size={36} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Modal Form */}
-      <Modal transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.5)]">
-            <View className="w-[90%] p-5 bg-white rounded-lg gap-y-3">
-              <Text className="font-semibold text-lg mb-3 text-center">Crear evento</Text>
-              <TextInput
-                placeholder="Título"
-                value={title}
-                onChangeText={setTitle}
-                className="px-4 py-3 border border-gray-300 rounded-md w-full"
-              />
-              <TextInput
-                placeholder="Descripción"
-                value={description}
-                onChangeText={setDescription}
-                multiline
-                className="px-4 py-3 border border-gray-300 rounded-md w-full"
-              />
-              <TextInput
-                placeholder="Donde"
-                value={location}
-                onChangeText={setLocation}
-                className="px-4 py-3 border border-gray-300 rounded-md w-full"
-              />
-
-              <Text className="font-semibold">Seleccionar fecha</Text>
-              {showDatePicker && (
-                <DateTimePicker value={selectedDate} mode="date" display="default" onChange={onChangeDate} />
-              )}
-              <Button title="Seleccionar fecha" onPress={() => setShowDatePicker(true)} />
-
-              <Text className="font-semibold">Seleccionar hora</Text>
-              {showTimePicker && (
-                <DateTimePicker value={selectedTime} mode="time" display="default" onChange={onChangeTime} />
-              )}
-              <Button title="Seleccionar hora" onPress={() => setShowTimePicker(true)} />
-
-              <TouchableOpacity
-                className="w-full mt-6 bg-black justify-center items-center h-12 rounded-lg"
-                onPress={createEvent}
-              >
-                <Text className="text-white font-semibold">Crear evento</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="w-full bg-gray-200 justify-center items-center h-12 rounded-lg"
-                onPress={toggleModal}
-              >
-                <Text className="text-black font-semibold">Cerrar</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Botón crear evento */}
+          <View className="absolute z-30 right-8 top-12">
+            <TouchableOpacity onPress={toggleModal}>
+              <Ionicons name={'add-circle-outline'} size={36} color="white" />
+            </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-    </View>
+
+          {/* Modal Form */}
+          <Modal transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.5)]">
+                <View className="w-[90%] p-5 bg-white rounded-lg gap-y-3">
+                  <Text className="font-semibold text-lg mb-3 text-center">Crear evento</Text>
+                  <TextInput
+                    placeholder="Título"
+                    value={title}
+                    onChangeText={setTitle}
+                    className="px-4 py-3 border border-gray-300 rounded-md w-full"
+                  />
+                  <TextInput
+                    placeholder="Descripción"
+                    value={description}
+                    onChangeText={setDescription}
+                    multiline
+                    className="px-4 py-3 border border-gray-300 rounded-md w-full"
+                  />
+                  <TextInput
+                    placeholder="Donde"
+                    value={location}
+                    onChangeText={setLocation}
+                    className="px-4 py-3 border border-gray-300 rounded-md w-full"
+                  />
+
+                  <Text className="font-semibold">Seleccionar fecha</Text>
+                  {showDatePicker && (
+                    <DateTimePicker value={selectedDate} mode="date" display="default" onChange={onChangeDate} />
+                  )}
+                  <Button title="Seleccionar fecha" onPress={() => setShowDatePicker(true)} />
+
+                  <Text className="font-semibold">Seleccionar hora</Text>
+                  {showTimePicker && (
+                    <DateTimePicker value={selectedTime} mode="time" display="default" onChange={onChangeTime} />
+                  )}
+                  <Button title="Seleccionar hora" onPress={() => setShowTimePicker(true)} />
+
+                  <TouchableOpacity
+                    className="w-full mt-6 bg-black justify-center items-center h-12 rounded-lg"
+                    onPress={createEvent}
+                  >
+                    <Text className="text-white font-semibold">Crear evento</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className="w-full bg-gray-200 justify-center items-center h-12 rounded-lg"
+                    onPress={toggleModal}
+                  >
+                    <Text className="text-black font-semibold">Cerrar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        </View>
+      )}
+    </>
   );
 };
 
