@@ -23,6 +23,9 @@ const Map = () => {
   const authInstance = getAuth();
   const user = authInstance.currentUser;
 
+  console.log('User:', user);
+  console.log('userIdName:', user?.uid);
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -111,10 +114,8 @@ const Map = () => {
 
   const createEvent = () => {
     const userId = user?.uid;
-    const userIdName = user?.displayName;
     const { latitude, longitude } = getRandomCoordinatesInCatalonia();
 
-    console.log('userIdName:', userIdName);
     const newEvent = {
       idUser: userId,
       title: title || 'Sin título',

@@ -24,7 +24,7 @@ const Profile = () => {
 
   // Sample profile data
   const profile = {
-    username: "sunshine_vibes",
+    username: "ivetetetete",
     bio: "Digital creator | Travel enthusiast | Good vibes only ✨\nSharing moments that make life beautiful",
     posts: [
       { id: 1, imageUrl: "/api/placeholder/150/150", likes: 234 },
@@ -141,7 +141,7 @@ const Profile = () => {
           >
             <Ionicons name="logo-instagram" size={20} color="#FF7DB0" />
 
-            <Text className="ml-2 text-amber-800">@sunshine_vibes</Text>
+            <Text className="ml-2 text-amber-800">@ivetetetete</Text>
             <Ionicons name="link-outline" size={20} color="#FF7DB0" className='ml-1' />
           </TouchableOpacity>
         </View>
@@ -164,6 +164,15 @@ const Profile = () => {
               </View>
             </View>
           ))}
+        </View>
+
+        <View className='my-5'>
+          <TouchableOpacity
+            onPress={handleLogout}
+            className="bg-red-400 py-3 rounded-2xl"
+          >
+            <Text className="text-white text-center font-bold px-6 py-2">Logout</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

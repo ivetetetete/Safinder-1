@@ -64,7 +64,7 @@ export default function Login() {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={passwordHidden}
-                  className="flex-1 px-4 py-3 text-white"
+                  className="flex-1 px-4 py-3 text-black"
                   placeholderTextColor="#FF7DB0"
                   autoCapitalize="none"
                 />

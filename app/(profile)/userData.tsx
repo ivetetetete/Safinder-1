@@ -14,7 +14,7 @@ export default function UserData() {
   const { userId } = useLocalSearchParams();
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
-  const [dob, setDob] = useState(new Date());
+  const [dob, setDob] = useState('');
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [gender, setGender] = useState('');
@@ -24,6 +24,26 @@ export default function UserData() {
   const [date, setDate] = useState(new Date());
 
   const [image, setImage] = useState<string | null>(null);
+
+  //date birth
+  const formatDate = (text: string) => {
+    // Remove any non-digit characters
+    const cleaned = text.replace(/[^0-9]/g, '');
+
+    // Format the date as dd/mm/yyyy
+    let formatted = '';
+    for (let i = 0; i < cleaned.length && i < 8; i++) {
+      if (i === 2 || i === 4) formatted += '/';
+      formatted += cleaned[i];
+    }
+
+    return formatted;
+  };
+
+  const handleDateChange = (text: string) => {
+    const formattedDate = formatDate(text);
+    setDob(formattedDate);
+  };
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -123,11 +143,13 @@ export default function UserData() {
 
           <View className="border-2 border-pink-500 rounded-lg flex-row items-center p-2">
             <TextInput
-              placeholder="Birthdate"
-              value={country}
-              onChangeText={setCountry}
+              placeholder="Birthdate (dd/mm/yyyy)"
+              value={dob}
+              onChangeText={handleDateChange}
               className="px-4 py-3 text-black"
               placeholderTextColor="#EC4899"
+              keyboardType="numeric"
+              maxLength={10}
             />
           </View>
           {/* <DateTimePicker
@@ -181,7 +203,7 @@ export default function UserData() {
           <Text className='text-center text-white'>Save Details</Text>
         </TouchableOpacity> */}
 
-        <TouchableOpacity  onPress={() => router.push('/userInterest')} className="bg-pink-500 m-4 p-3 rounded-lg mx-auto mb-8 w-40"
+        <TouchableOpacity onPress={() => router.push('/userInterest')} className="bg-pink-500 m-4 p-3 rounded-lg mx-auto mb-8 w-40"
         >
           <Text className='text-center text-white'>Next</Text>
         </TouchableOpacity>
