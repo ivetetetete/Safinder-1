@@ -75,7 +75,7 @@ export default function UserData() {
   };
 
   return (
-    <SafeAreaView className="flex-1 h-screen bg-[#FF7DB0]">
+    <SafeAreaView className="flex-1 h-screen bg-[#FFEA8A]">
       <View className='p-3 flex flex-row justify-center gap-x-5'>
         <View className='border-2 rounded-full w-32 h-2  bg-pink-500 border-pink-500 flex justify-center items-center'>
         </View>
@@ -85,14 +85,14 @@ export default function UserData() {
         </View>
       </View>
       <View className='flex justify-center items-center my-auto '>
-        <Text className='font-bold text-white text-2xl text-center py-3'>We want to know more about you</Text>
+        <Text className='font-bold text-pink-500 text-2xl text-center py-3'>We want to know more about you</Text>
 
         {/* <View className='gap-y-3 px-3'>
         <Button title="Pick an image from camera roll" onPress={pickImage} />
         {image && <Image source={{ uri: image }} className='w-10' />}
       </View> */}
         <View className='mt-3 gap-y-3 px-3 w-full'>
-          <View className="border-2 border-white rounded-lg flex-row items-center p-2">
+          <View className="border-2 border-pink-500 rounded-lg flex-row items-center p-2">
             <TextInput
               placeholder="Name"
               value={name}
@@ -101,7 +101,7 @@ export default function UserData() {
               placeholderTextColor="#EC4899"
             />
           </View>
-          <View className="border-2 border-white rounded-lg flex-row items-center p-2">
+          <View className="border-2 border-pink-500 rounded-lg flex-row items-center p-2">
             <TextInput
               placeholder="Surname"
               value={surname}
@@ -110,7 +110,7 @@ export default function UserData() {
               placeholderTextColor="#EC4899"
             />
           </View>
-          <View className="border-2 border-white rounded-lg flex-row items-center py-5 px-4">
+          <View className="border-2 border-pink-500 rounded-lg flex-row items-center py-5 px-4">
             <RNPickerSelect
               placeholder={placeholder}
               onValueChange={(value) => console.log(value)}
@@ -121,7 +121,7 @@ export default function UserData() {
             />
           </View>
 
-          <View className="border-2 border-white rounded-lg flex-row items-center p-2">
+          <View className="border-2 border-pink-500 rounded-lg flex-row items-center p-2">
             <TextInput
               placeholder="Birthdate"
               value={country}
