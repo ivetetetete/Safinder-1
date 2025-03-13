@@ -7,25 +7,35 @@ import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Welcome() {
     const router = useRouter();
 
     return (
-        <SafeAreaView className="flex-1 h-screen bg-[#FFEA8A]">
-            <View className='flex justify-center items-center m-auto'>
+        <LinearGradient
+            colors={['#ff7db0', '#ffd43b']}
+            style={{ flex: 1 }}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0, y: 0 }}
+            className='h-screen'
+        >
+            <SafeAreaView className="flex-1 h-screen">
+                <View className='flex justify-center items-center m-auto'>
 
-                <Text className='font-bold text-pink-500 text-[60px] py-3'>Welcome to Safinder!</Text>
-                <Text className='font-bold text-pink-500 text-2xl text-center py-1'>We're SO excited to have you here!</Text>
+                    <Text className='font-bold text-white text-[60px] py-3'>Welcome to Safinder!</Text>
+                    <Text className='font-bold text-pink-500 text-2xl text-center py-1'>We're SO excited to have you here!</Text>
 
-                <TouchableOpacity onPress={() => router.push('/userData')}>
-                    <View className='border border-pink-500 rounded-xl p-3 mt-5'>
-                        <Text className="text-pink-500 font-bold text-xl">Let's get started!</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity onPress={() => router.push('/userData')}>
+                        <View className='border border-pink-500 rounded-xl p-3 mt-5'>
+                            <Text className="text-pink-500 font-bold text-xl">Let's get started!</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
 
-        </SafeAreaView>
+            </SafeAreaView>
+        </LinearGradient>
+
         //     <SafeAreaView className="flex-1 bg-[#FFFFD8] items-center justify-center p-4">
         //   <Text className="text-4xl font-bold text-center mb-8 color-[##FF7DB0]">
         //     Welcome to Safinder

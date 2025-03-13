@@ -165,6 +165,15 @@ const Profile = () => {
             </View>
           ))}
         </View>
+
+        <View>
+        <TouchableOpacity
+          onPress={handleLogout}
+          className="bg-red-400 py-3 rounded-lg mb-8"
+        >
+          <Text className="text-white text-center font-bold px-6 py-2">Logout</Text>
+        </TouchableOpacity>
+      </View>
       </ScrollView>
     </SafeAreaView>
   );
