@@ -13,13 +13,16 @@
       "backgroundColor": "#ffea8a"
     },
     "ios": {
+      "newArchEnabled": true,
       "supportsTablet": true
     },
     "android": {
+      "newArchEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.angeleads.Safinder"
     },
     "web": {
       "bundler": "metro",
@@ -28,7 +31,9 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true

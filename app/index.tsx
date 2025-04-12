@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ClerkProvider } from '@clerk/clerk-expo';
 import { Redirect } from 'expo-router';
 import { auth } from '../library/firebaseConfig';
 
