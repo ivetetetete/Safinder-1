@@ -1,5 +1,5 @@
 // components/ChatUserItem.tsx
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function ChatUserItem({ user, currentUserId }: { 
@@ -15,7 +15,7 @@ export default function ChatUserItem({ user, currentUserId }: {
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={handlePress}
       className="bg-white p-4 rounded-lg mb-3 shadow-sm flex-row items-center"
     >
@@ -26,6 +26,6 @@ export default function ChatUserItem({ user, currentUserId }: {
         </Text>
         <Text className="text-gray-500">{user.city}</Text>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

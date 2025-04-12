@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ClerkProvider } from '@clerk/clerk-expo';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SecureStore from 'expo-secure-store';
 import { Stack } from 'expo-router';
 import './global.css';
@@ -39,28 +40,30 @@ const RootLayout = () => {
             publishableKey={CLERK_PUBLISHABLE_KEY}
             tokenCache={tokenCache}
         >
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                }}>
-                {currentUser ? (
-                    <Stack.Screen
-                        name="(tabs)"
-                        options={{
-                            headerShown: false,
-                            title: 'Volver',
-                        }}
-                    />
-                ) : (
-                    <Stack.Screen
-                        name="(auth)"
-                        options={{
-                            headerShown: false,
-                            title: 'Volver',
-                        }}
-                    />
-                )}
-            </Stack>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <Stack
+                    screenOptions={{
+                        headerShown: false,
+                    }}>
+                    {currentUser ? (
+                        <Stack.Screen
+                            name="(tabs)"
+                            options={{
+                                headerShown: false,
+                                title: 'Volver',
+                            }}
+                        />
+                    ) : (
+                        <Stack.Screen
+                            name="(auth)"
+                            options={{
+                                headerShown: false,
+                                title: 'Volver',
+                            }}
+                        />
+                    )}
+                </Stack>
+            </GestureHandlerRootView>
         </ClerkProvider>
     );
 };
