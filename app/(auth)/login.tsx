@@ -7,12 +7,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
+
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordHidden, setPasswordHidden] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+
 
   const handleLogin = async () => {
     try {
@@ -25,6 +27,7 @@ export default function Login() {
     }
   };
 
+
   return (
     <LinearGradient
       colors={['#ffd43b', '#ff7db0']}
@@ -36,17 +39,19 @@ export default function Login() {
       <SafeAreaView className="flex-1">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1 justify-center px-6"
+          className="flex-1"
         >
-          <View className="bg-white rounded-3xl p-8 shadow-lg">
-            <Text className="text-4xl font-bold text-[#FF7DB0] mb-6 text-center">Welcome to Safinder</Text>
+          <View className="bg-white h-screen mt-32 rounded-3xl p-8 shadow-lg">
+            <Text className="text-4xl font-bold text-primary-600 mb-6 text-center">Welcome to Safinder</Text>
+
 
             {errorMessage ? (
               <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
             ) : null}
 
+
             <View className="space-y-2">
-              <View className="border border-[#FF7DB0] rounded-xl mb-3">
+              <View className="border border-primary-600 rounded-xl mb-3">
                 <TextInput
                   placeholder="email"
                   value={email}
@@ -58,13 +63,14 @@ export default function Login() {
                 />
               </View>
 
+
               <View className="border border-[#FF7DB0] rounded-xl flex-row items-center">
                 <TextInput
                   placeholder="password"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={passwordHidden}
-                  className="flex-1 px-4 py-3 text-black"
+                  className="flex-1 px-4 py-3 text-white"
                   placeholderTextColor="#FF7DB0"
                   autoCapitalize="none"
                 />
@@ -78,6 +84,7 @@ export default function Login() {
               </View>
             </View>
 
+
             <TouchableOpacity
               onPress={handleLogin}
               className="bg-[#FF7DB0] mt-6 py-3 rounded-2xl"
@@ -86,7 +93,7 @@ export default function Login() {
             </TouchableOpacity>
             <View className="flex-row justify-center mt-6">
               <Text className="text-gray-400">You don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/welcome')}>
+              <TouchableOpacity onPress={() => router.push('/signup')}>
                 <Text className="text-[#FFA876] font-bold">Sign up</Text>
               </TouchableOpacity>
             </View>
@@ -96,3 +103,4 @@ export default function Login() {
     </LinearGradient>
   );
 }
+

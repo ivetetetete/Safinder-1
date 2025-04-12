@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from "../../library/firebaseConfig";
@@ -7,9 +7,22 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { FormControl, FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
+import { Input, InputField } from '@/components/ui/input';
 
 export default function SignUp() {
   const router = useRouter();
+  const [name, setName] = useState('');
+  const [surname, setSurname] = useState('');
+  const [dob, setDob] = useState(new Date());
+  const [pronouns, setPronouns] = useState('');
+
+  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('');
+  const [gender, setGender] = useState('');
+  const [bio, setBio] = useState('');
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +33,11 @@ export default function SignUp() {
 
   const togglePasswordVisibility = () => {
     setPasswordHidden(!passwordHidden);
+  };
+
+  const onChangeDob = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
+    const currentDate = selectedDate || dob;
+    setDob(currentDate);
   };
 
   const toggleConfirmPasswordVisibility = () => {
@@ -76,32 +94,50 @@ export default function SignUp() {
       <SafeAreaView className="flex-1">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1 justify-center px-6"
+          className="flex-1"
         >
-          <View className="bg-white rounded-3xl p-8 shadow-lg">
-          <Text className="text-4xl font-bold text-[#FFA876] mb-6 text-center">Welcome to Safinder</Text>
+          <View className="bg-white h-screen mt-32 rounded-3xl p-8 shadow-lg">
+            <View className='mb-2'>
+              <Text className="text-4xl font-bold text-secondary-200 mb-4">Registration</Text>
 
-            {errorMessage ? (
-              <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
-            ) : null}
+              {errorMessage ? (
+                <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
+              ) : null}
 
+              <Text className='text-secondary-200 text-lg font-bold'>
+                Personal info
+              </Text>
+            </View>
             <View className="space-y-4">
-              <View className="border border-[#FFA876] rounded-xl mb-3 ">  
+              <FormControl isRequired>
+                <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                  <InputField
+                    className="text-neutral-900 text-base px-0"
+                    placeholder="Name"
+                    value={name}
+                    onChangeText={setName}
+                    //accessibilityLabel={t("name_label")}
+                  />
+                </Input>
+              </FormControl>
+
+              <View className="border border-secondary-200 rounded-xl mb-3 ">
                 <TextInput
-                  placeholder="Username"
-                  value={username}
-                  onChangeText={setUsername}
+                  placeholder="Name"
+                  value={name}
+                  onChangeText={setName}
                   className="px-4 py-3 text-black "
                   placeholderTextColor="#FFA876"
                   autoCapitalize="none"
                 />
               </View>
+              
 
-              <View className="border border-[#FFA876] rounded-xl mb-3">
+              <View className="border border-secondary-200  rounded-xl mb-3">
                 <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
+                  placeholder="Surname"
+                  value={surname}
+                  onChangeText={setSurname}
                   className="px-4 py-3 text-black "
                   placeholderTextColor="#FFA876"
                   autoCapitalize="none"
@@ -109,48 +145,36 @@ export default function SignUp() {
                 />
               </View>
 
-              <View className="border border-[#FFA876] rounded-xl mb-3 flex-row items-center">
-                <TextInput
-                  placeholder="Password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={passwordHidden}
-                  className="flex-1 px-4 py-3 text-black "
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity onPress={togglePasswordVisibility} className="pr-4">
-                  <Ionicons
-                    name={passwordHidden ? 'eye-outline' : 'eye-off-outline'}
-                    size={24}
-                    color="#FFA876"
-                  />
-                </TouchableOpacity>
+              <View className="border border-secondary-200  rounded-xl mb-3 flex-row items-center">
+                {/* Make TouchableOpacity and open modal */}
+                {/* <DateTimePicker value={dob} mode="date" display="default" onChange={onChangeDob} /> */}
               </View>
 
-              <View className="border border-[#FFA876] rounded-xl flex-row items-center">
+              <View className="border border-secondary-200  rounded-xl flex-row items-center">
                 <TextInput
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={confirmPasswordHidden}
+                  placeholder="Gender identity"
+                  value={gender}
+                  onChangeText={setGender}
                   className="flex-1 px-4 py-3 text-black"
                   placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
                 />
-                <TouchableOpacity onPress={toggleConfirmPasswordVisibility} className="pr-4">
-                  <Ionicons
-                    name={confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
-                    size={24}
-                    color="#FFA876"
-                  />
-                </TouchableOpacity>
+              </View>
+
+
+              <View className="border border-secondary-200  rounded-xl flex-row items-center">
+                <TextInput
+                  placeholder="Pronouns"
+                  value={pronouns}
+                  onChangeText={setPronouns}
+                  className="flex-1 px-4 py-3 text-black"
+                  placeholderTextColor="#FFA876"
+                />
               </View>
             </View>
 
             <TouchableOpacity
               onPress={handleSignUp}
-              className="bg-[#FFA876] mt-6 py-3 rounded-2xl"
+              className="bg-secondary-200 mt-6 py-3 rounded-2xl"
             >
               <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
             </TouchableOpacity>
