@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput, Modal, TouchableWithoutFeedback } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from "../../library/firebaseConfig";
@@ -10,6 +10,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { FormControl, FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
 import { Input, InputField } from '@/components/ui/input';
+import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
+import {
+  Ban,
+  CheckIcon,
+  ChevronDown,
+  CircleCheckBig,
+  Clock,
+  Hourglass,
+  Minus,
+  OctagonAlert,
+  Plus,
+  ShieldCheck,
+  UsersRound,
+} from "lucide-react-native";
 
 export default function SignUp() {
   const router = useRouter();
@@ -30,19 +44,21 @@ export default function SignUp() {
   const [passwordHidden, setPasswordHidden] = useState(true);
   const [confirmPasswordHidden, setConfirmPasswordHidden] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordHidden(!passwordHidden);
   };
 
-  const onChangeDob = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate || dob;
-    setDob(currentDate);
-  };
-
   const toggleConfirmPasswordVisibility = () => {
     setConfirmPasswordHidden(!confirmPasswordHidden);
   };
+
+  const onChangeDob = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
+    const currentDate = selectedDate || dob;
+    setDob(currentDate);
+    setShowDatePicker(false);
+  }
 
   const handleSignUp = async () => {
     if (!username || !email || !password || !confirmPassword) {
@@ -108,7 +124,7 @@ export default function SignUp() {
                 Personal info
               </Text>
             </View>
-            <View className="space-y-4">
+            <View className="gap-y-4">
               <FormControl isRequired>
                 <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
                   <InputField
@@ -116,60 +132,225 @@ export default function SignUp() {
                     placeholder="Name"
                     value={name}
                     onChangeText={setName}
-                    //accessibilityLabel={t("name_label")}
+                  //accessibilityLabel={t("name_label")}
                   />
                 </Input>
               </FormControl>
 
-              <View className="border border-secondary-200 rounded-xl mb-3 ">
-                <TextInput
-                  placeholder="Name"
-                  value={name}
-                  onChangeText={setName}
-                  className="px-4 py-3 text-black "
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                />
-              </View>
-              
+              <FormControl isRequired>
+                <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                  <InputField
+                    placeholder="Surname"
+                    value={surname}
+                    onChangeText={setSurname}
+                    className="text-neutral-900 text-base px-0"
+                  //accessibilityLabel={t("name_label")}
+                  />
+                </Input>
+              </FormControl>
 
-              <View className="border border-secondary-200  rounded-xl mb-3">
-                <TextInput
-                  placeholder="Surname"
-                  value={surname}
-                  onChangeText={setSurname}
-                  className="px-4 py-3 text-black "
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                />
-              </View>
-
-              <View className="border border-secondary-200  rounded-xl mb-3 flex-row items-center">
+              <View className="border border-secondary-200  rounded flex-row items-center">
                 {/* Make TouchableOpacity and open modal */}
-                {/* <DateTimePicker value={dob} mode="date" display="default" onChange={onChangeDob} /> */}
+                <TouchableOpacity onPress={() => setShowDatePicker(true)} className="flex-1 px-4 py-3">
+                  <Text className='text-neutral-400'>Dob</Text>
+                </TouchableOpacity>
               </View>
 
-              <View className="border border-secondary-200  rounded-xl flex-row items-center">
-                <TextInput
-                  placeholder="Gender identity"
-                  value={gender}
-                  onChangeText={setGender}
-                  className="flex-1 px-4 py-3 text-black"
-                  placeholderTextColor="#FFA876"
-                />
-              </View>
+              {showDatePicker && (
+                <Modal
+                  transparent={true}
+                  visible={showDatePicker}
+                  onRequestClose={() => setShowDatePicker(false)}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => setShowDatePicker(false)}
+                  >
+                    <View className="flex-1 justify-center items-center bg-black/50">
+                      <View className="bg-white p-4 rounded-lg mx-5 flex items-center">
+                        <DateTimePicker
+                          textColor="red"
+                          accentColor="#D00D2B"
+                          themeVariant="light"
+                          value={new Date()}
+                          mode="date"
+                          display={
+                            Platform.OS === "ios" ? "inline" : "default"
+                          }
+                          onChange={onChangeDob}
+                        />
+                        {/* <HStack className="mt-4 w-full gap-x-1">
+                            <Button
+                              variant="outline"
+                              size="md"
+                              onPress={() => setShowCalendar(false)}
+                              className="flex-1"
+                            >
+                              <ButtonText>{t("close")}</ButtonText>
+                            </Button>
+                            <Button
+                              size="md"
+                              className="flex-1"
+                              onPress={handleAcceptDate}
+                            >
+                              <ButtonText>{t("accept")}</ButtonText>
+                            </Button>
+                          </HStack> */}
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </Modal>
+              )}
+
+              <FormControl isRequired>
+                <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                  <InputField
+                    placeholder="Surname"
+                    value={surname}
+                    onChangeText={setSurname}
+                    className="text-neutral-900 text-base px-0"
+                  //accessibilityLabel={t("name_label")}
+                  />
+                </Input>
+              </FormControl>
+
+              <Select selectedValue={gender}
+                onValueChange={(value) => {
+                  console.log('Selected Value:', value);
+                  setGender(value);
+                }}>
+                <SelectTrigger variant="outline" size="md" className='border border-secondary-200  rounded' >
+                  <SelectInput placeholder="Genero" />
+                  <SelectIcon className="mr-3" as={ChevronDown} color='#ffa876' />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="Femenino" value="f" />
+                    <SelectItem label="No binario" value="nb" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
 
 
-              <View className="border border-secondary-200  rounded-xl flex-row items-center">
-                <TextInput
-                  placeholder="Pronouns"
-                  value={pronouns}
-                  onChangeText={setPronouns}
-                  className="flex-1 px-4 py-3 text-black"
-                  placeholderTextColor="#FFA876"
-                />
-              </View>
+              <Select selectedValue={pronouns}
+                onValueChange={(value) => {
+                  console.log('Selected Value:', value);
+                  setGender(value);
+                }}>
+                <SelectTrigger variant="outline" size="md" className='border border-secondary-200  rounded' >
+                  <SelectInput placeholder="Pronombres" />
+                  <SelectIcon className="mr-3" as={ChevronDown} color='#ffa876' />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="She/her" value="f" />
+                    <SelectItem label="They/them" value="nb" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+            </View>
+
+            <Text className='mt-4 mb-2 text-secondary-200 text-lg font-bold'>
+            Demographics info
+            </Text>
+            <View className="gap-y-4">
+              <Select selectedValue={country}
+                onValueChange={(value) => {
+                  console.log('Selected Value:', value);
+                  setGender(value);
+                }}>
+                <SelectTrigger variant="outline" size="md" className='border border-secondary-200  rounded' >
+                  <SelectInput placeholder="País" />
+                  <SelectIcon className="mr-3" as={ChevronDown} color='#ffa876' />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="Femenino" value="f" />
+                    <SelectItem label="No binario" value="nb" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+
+
+              <Select selectedValue={city}
+                onValueChange={(value) => {
+                  console.log('Selected Value:', value);
+                  setGender(value);
+                }}>
+                <SelectTrigger variant="outline" size="md" className='border border-secondary-200  rounded' >
+                  <SelectInput placeholder="Ciudad" />
+                  <SelectIcon className="mr-3" as={ChevronDown} color='#ffa876' />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="She/her" value="f" />
+                    <SelectItem label="They/them" value="nb" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+            </View>
+
+            <Text className='mt-4 mb-2 text-secondary-200 text-lg font-bold'>
+            Personal interests
+            </Text>
+            <View className="gap-y-4">
+              <Select selectedValue={country}
+                onValueChange={(value) => {
+                  console.log('Selected Value:', value);
+                  setGender(value);
+                }}>
+                <SelectTrigger variant="outline" size="md" className='border border-secondary-200  rounded' >
+                  <SelectInput placeholder="Hobbies" />
+                  <SelectIcon className="mr-3" as={ChevronDown} color='#ffa876' />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="Femenino" value="f" />
+                    <SelectItem label="No binario" value="nb" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+
+
+              <Select selectedValue={city}
+                onValueChange={(value) => {
+                  console.log('Selected Value:', value);
+                  setGender(value);
+                }}>
+                <SelectTrigger variant="outline" size="md" className='border border-secondary-200  rounded' >
+                  <SelectInput placeholder="Ciudad" />
+                  <SelectIcon className="mr-3" as={ChevronDown} color='#ffa876' />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="She/her" value="f" />
+                    <SelectItem label="They/them" value="nb" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
             </View>
 
             <TouchableOpacity

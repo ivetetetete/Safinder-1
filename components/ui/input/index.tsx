@@ -35,7 +35,7 @@ cssInterop(PrimitiveIcon, {
 
 /**data-[hover=true]:border-outline-400 data-[focus=true]:border-primary-700 data-[focus=true]:hover:border-primary-700 data-[disabled=true]:hover:border-background-300 */
 const inputStyle = tva({
-  base: 'flex-row overflow-hidden content-center  data-[disabled=true]:opacity-40  items-center',
+  base: 'flex-row overflow-hidden content-center data-[disabled=true]:opacity-40  items-center',
 
   variants: {
     size: {
@@ -45,7 +45,7 @@ const inputStyle = tva({
       sm: 'h-9',
     },
     action: {
-      primary: 'border border-secondary-200',
+      primary: 'border-secondary-200',
       secondary: 'bg-secondary-700',
     }, 
 
@@ -110,14 +110,14 @@ type IInputProps = React.ComponentProps<typeof UIInput> &
   VariantProps<typeof inputStyle> & { className?: string };
 const Input = React.forwardRef<React.ComponentRef<typeof UIInput>, IInputProps>(
   function Input(
-    { className, variant = 'outline', size = 'md', ...props },
+    { className, action="primary", variant = 'outline', size = 'md', ...props },
     ref
   ) {
     return (
       <UIInput
         ref={ref}
         {...props}
-        className={inputStyle({ variant, size, class: className })}
+        className={inputStyle({ action, variant, size, class: className })}
         context={{ variant, size }}
       />
     );

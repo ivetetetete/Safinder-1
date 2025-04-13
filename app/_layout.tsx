@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import './global.css';
 import { auth } from '../library/firebaseConfig';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const RootLayout = () => {
     const [loading, setLoading] = useState(true);
@@ -21,19 +22,20 @@ const RootLayout = () => {
     }
 
     return (
-        <Stack
-            screenOptions={{
-                headerShown: false,
-            }}>
-            {currentUser ? (
-                <Stack.Screen
-                    name="(tabs)"
-                    options={{
-                        headerShown: false,
-                        title: 'Volver',
-                    }}
-                />
-            ) : (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <Stack
+                screenOptions={{
+                    headerShown: false,
+                }}>
+                {currentUser ? (
+                    <Stack.Screen
+                        name="(tabs)"
+                        options={{
+                            headerShown: false,
+                            title: 'Volver',
+                        }}
+                    />
+                ) : (
                     <Stack.Screen
                         name="(auth)"
                         options={{
@@ -41,8 +43,10 @@ const RootLayout = () => {
                             title: 'Volver',
                         }}
                     />
-            )}
-        </Stack>
+                )}
+            </Stack>
+        </GestureHandlerRootView>
+
     );
 };
 
