@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FormControl } from '@/components/ui/form-control';
 import { Input, InputField } from '@/components/ui/input';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
 export default function SignUp() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function SignUp() {
       try {
         await setDoc(doc(db, 'users', user.uid), {
           userId: user.uid,
-          username: username,
+          //username: username,
           email: email,
           firstEntry: true,
         });
@@ -73,9 +74,15 @@ export default function SignUp() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
+          <Image
+            source={require('../../assets/images/safinder-logo.png')}
+            style={{ position: 'absolute', top: 13, right: 0 }}
+            resizeMode="cover"
+            className="w-56 h-56"
+          />
           <View className="bg-white h-screen mt-32 rounded-3xl p-8 shadow-lg">
             <View className='mb-2'>
-              <Text className="text-4xl font-bold text-secondary-200 mb-4">Registration</Text>
+              <Text className="text-4xl font-bold text-secondary-200 mb-4">Registro</Text>
 
               {errorMessage ? (
                 <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
@@ -83,7 +90,7 @@ export default function SignUp() {
             </View>
             <View className="gap-y-4">
               <FormControl isRequired>
-                <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
                   <InputField
                     className=" text-base px-0"
                     placeholder="Email"
@@ -99,7 +106,7 @@ export default function SignUp() {
               </FormControl>
 
               <FormControl isRequired>
-                <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
                   <InputField
                     placeholder="Contraseña"
                     value={password}
@@ -119,7 +126,7 @@ export default function SignUp() {
               </FormControl>
 
               <FormControl isRequired>
-                <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
                   <InputField
                     placeholder="Repetir Contraseña"
                     value={confirmPassword}
@@ -138,19 +145,20 @@ export default function SignUp() {
                 </Input>
               </FormControl>
 
-              <TouchableOpacity
-                onPress={handleSignUp}
-                className="bg-secondary-200 mt-6 py-3 rounded-2xl"
-              >
-                <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
-              </TouchableOpacity>
 
-              <View className="flex-row justify-center mt-6">
-                <Text className="text-gray-400">Already have an account? </Text>
-                <TouchableOpacity onPress={() => router.push('/login')}>
-                  <Text className="text-[#FF7DB0] font-bold">Log In</Text>
-                </TouchableOpacity>
-              </View>
+            </View>
+            <TouchableOpacity
+              onPress={handleSignUp}
+              className="bg-secondary-200 mt-6 py-3 rounded-2xl"
+            >
+              <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
+            </TouchableOpacity>
+
+            <View className="flex-row justify-center mt-6">
+              <Text className="text-gray-400">¿Ya tienes una cuenta? </Text>
+              <TouchableOpacity onPress={() => router.push('/login')}>
+                <Text className="text-[#FF7DB0] font-bold">Inicia sesión</Text>
+              </TouchableOpacity>
             </View>
           </View>
 

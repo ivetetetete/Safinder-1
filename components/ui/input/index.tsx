@@ -35,7 +35,7 @@ cssInterop(PrimitiveIcon, {
 
 /**data-[hover=true]:border-outline-400 data-[focus=true]:border-primary-700 data-[focus=true]:hover:border-primary-700 data-[disabled=true]:hover:border-background-300 */
 const inputStyle = tva({
-  base: 'flex-row overflow-hidden content-center data-[disabled=true]:opacity-40  items-center',
+  base: 'flex-row overflow-hidden content-center data-[disabled=true]:opacity-40  items-center ',
 
   variants: {
     size: {
@@ -45,8 +45,8 @@ const inputStyle = tva({
       sm: 'h-9',
     },
     action: {
-      primary: 'border-secondary-200',
-      secondary: 'bg-secondary-700',
+      primary: 'border-primary-600',
+      secondary: 'border-secondary-200',
     }, 
 
     variant: {

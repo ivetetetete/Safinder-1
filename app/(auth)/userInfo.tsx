@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput, Modal, TouchableWithoutFeedback, FlatList, Alert } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from "../../library/firebaseConfig";
 import { useRouter } from 'expo-router';
@@ -15,7 +15,9 @@ import SelectMultiple from '@/components/SelectMultiple';
 import { Button, ButtonText } from '@/components/ui/button';
 
 export default function UserInfo() {
-    //if firstEnrtry is true, show this page otherrwise go to the home page
+    const auth = getAuth();
+    const userId = auth.currentUser?.uid;
+
     const router = useRouter();
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
@@ -55,6 +57,12 @@ export default function UserInfo() {
         { key: "CA", value: "Canada" },
         { key: "DE", value: "Germany" },
         { key: "EG", value: "Egypt" },
+        { key: "IT", value: "Italy" },
+        { key: "MX", value: "Mexico" },
+        { key: "NG", value: "Nigeria" },
+        { key: "RU", value: "Russia" },
+        { key: "ES", value: "Spain" },
+        { key: "GB", value: "United Kingdom" },
     ];
 
     const cityData = [
@@ -122,40 +130,46 @@ export default function UserInfo() {
         setShowDatePicker(false);
     };
 
-
-    const handleSignUp = async () => {
-        if (!name || !surname || !dob || !pronouns || !country || !city || !gender || !bio || !username || !hobbies) {
+    //surnamw
+    const handleUserData = async () => {
+        if (!name || !dob || !pronouns || !country || !city || !gender || !username || !hobbies) {
             setErrorMessage("All fields are required");
             return;
         }
 
         try {
-            console.log("Attempting to create user with email:", email);
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            console.log("User created successfully:", user.uid);
+            const userDocRef = doc(db, "users", userId as string);
+            await setDoc(userDocRef, {
+                userId: userId,
+                username,
+                name,
+                surname,
+                dateOfBirth: dob,
+                country,
+                city,
+                gender,
+                bio
+            });
+            router.push({
+                pathname: '/home',
+                params: { name: name }
+            });
 
-            console.log("Attempting to create Firestore document");
-            try {
-                await setDoc(doc(db, 'users', user.uid), {
-                    userId: user.uid,
-                    username: username,
-                    email: email,
-                });
-                console.log("Firestore document created successfully");
-                router.push({
-                    pathname: '/(profile)/welcome',
-                    params: { userId: user.uid }
-                });
-            } catch (firestoreError: any) {
-                console.error("Firestore error:", firestoreError.code, firestoreError.message);
-                setErrorMessage(`Error creating user profile: ${firestoreError.message}`);
-            }
-        } catch (authError: any) {
-            console.error("Authentication error:", authError.code, authError.message);
-            setErrorMessage(`Error creating user: ${authError.message}`);
+            console.log("User details saved successfully");
+        } catch (error) {
+            console.error("Error saving user details: ", error);
         }
     };
+
+    console.log("User ID:", userId);
+    console.log("Name:", name);
+    console.log("Surname:", surname);
+    console.log("Date of Birth:", dob);
+    console.log("Country:", country);
+    console.log("City:", city);
+    console.log("Pronouns:", pronouns);
+    console.log("Username:", username);
+    console.log("Hobbies:", hobbies);
 
     return (
         <LinearGradient
@@ -188,7 +202,7 @@ export default function UserInfo() {
                                 </View>
                                 <View className="gap-y-4">
                                     <FormControl isRequired>
-                                        <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                                        <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
                                             <InputField
                                                 className=" text-base px-0"
                                                 placeholder="Name"
@@ -200,7 +214,7 @@ export default function UserInfo() {
                                     </FormControl>
 
                                     <FormControl isRequired>
-                                        <Input action='primary' className="rounded py-2.5 px-3.5" size="xl">
+                                        <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
                                             <InputField
                                                 placeholder="Surname"
                                                 value={surname}
@@ -316,7 +330,7 @@ export default function UserInfo() {
                                 </View>
 
                                 <TouchableOpacity
-                                    onPress={handleSignUp}
+                                    onPress={handleUserData}
                                     className="bg-secondary-200 mt-6 py-3 rounded-2xl"
                                 >
                                     <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
