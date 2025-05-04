@@ -1,0 +1,109 @@
+[
+    {
+      "id": 1,
+      "question": "¿Qué te gustaría encontrar?",
+      "options": [
+        { "key": "A", "label": "Relación" },
+        { "key": "B", "label": "Algo casual" }
+      ]
+    },
+    {
+      "id": 2,
+      "question": "¿Tendrías una relación/rollo a distancia?",
+      "options": [
+        { "key": "A", "label": "sí, podría intentarlo" },
+        { "key": "B", "label": "No, nunca" }
+      ]
+    },
+    {
+      "id": 3,
+      "question": "¿Hacia dónde te inclinas?",
+      "options": [
+        { "key": "A", "label": "relación cerrada/monógama" },
+        { "key": "B", "label": "relación/rollo abierto-poliamor" }
+      ]
+    },
+    {
+      "id": 4,
+      "question": "¿Con qué diferencia de edad te sientes cómoda?",
+      "options": [
+        { "key": "A", "label": "0-2 años" },
+        { "key": "B", "label": "0-5 años" },
+        { "key": "C", "label": "0-6+ años" }
+      ]
+    },
+    {
+      "id": 5,
+      "question": "¿Cuáles son tus creencias (o no) espirituales/religiosas?",
+      "options": [
+        { "key": "A", "label": "cristianismo" },
+        { "key": "B", "label": "ateísmo" },
+        { "key": "C", "label": "agnosticismo" },
+        { "key": "D", "label": "otro/a" }
+      ]
+    },
+    {
+      "id": 6,
+      "question": "¿Te planteas en un futuro tener hijos/as?",
+      "options": [
+        { "key": "A", "label": "Sí" },
+        { "key": "B", "label": "No" },
+        { "key": "C", "label": "Tal vez" }
+      ]
+    },
+    {
+      "id": 7,
+      "question": "¿Cuál consideras que es tu ideología política?",
+      "options": [
+        { "key": "A", "label": "Conservadora, de derechas" },
+        { "key": "B", "label": "central/neutra" },
+        { "key": "C", "label": "progresista, de izquierdas" }
+      ]
+    },
+    {
+      "id": 8,
+      "question": "¿Qué love language prefieres?",
+      "options": [
+        { "key": "A", "label": "palabras de confirmación" },
+        { "key": "B", "label": "contacto físico" },
+        { "key": "C", "label": "tiempo de calidad" }
+      ]
+    },
+    {
+      "id": 9,
+      "question": "¿Con qué tipo de lesbiana te identificas?",
+      "options": [
+        { "key": "A", "label": "Gloden retriever lesbian" },
+        { "key": "B", "label": "Black Cat bisexual" },
+        { "key": "C", "label": "Otro/a" }
+      ]
+    },
+    {
+      "id": 10,
+      "question": "¿Qué tipo de lesbiana te gusta más?",
+      "options": [
+        { "key": "A", "label": "Golden retriever lesbian" },
+        { "key": "B", "label": "Black Cat bisexual" },
+        { "key": "C", "label": "No me importa" }
+      ]
+    },
+    {
+      "id": 11,
+      "question": "¿Por qué tipo de vacaciones te decantarías?",
+      "options": [
+        { "key": "A", "label": "Relajación/ playa" },
+        { "key": "B", "label": "turismo/ historia - ruta gastronómica" },
+        { "key": "C", "label": "actividad física /deportes de mar y montaña" }
+      ]
+    },
+    {
+      "id": 12,
+      "question": "Por último, ¿Qué rol dirías que tienes en la cama?",
+      "options": [
+        { "key": "A", "label": "Top/ dominante" },
+        { "key": "B", "label": "Switch/ versátil" },
+        { "key": "C", "label": "Bottom/ pasiva" }
+      ]
+    }
+  ]
+  

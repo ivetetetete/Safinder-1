@@ -156,7 +156,7 @@ export default function SignUp() {
 
             <View className="flex-row justify-center mt-6">
               <Text className="text-gray-400">¿Ya tienes una cuenta? </Text>
-              <TouchableOpacity onPress={() => router.push('/login')}>
+              <TouchableOpacity onPress={() => router.push('/userInfo')}>
                 <Text className="text-[#FF7DB0] font-bold">Inicia sesión</Text>
               </TouchableOpacity>
             </View>

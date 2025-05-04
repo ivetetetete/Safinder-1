@@ -1,15 +1,14 @@
 import { Heart } from "lucide-react-native";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  FlatList,
-  Animated,
-  Easing,
   TextInput,
-  Platform,
+  FlatList,
+  Modal,
+  TouchableWithoutFeedback,
+  Dimensions,
 } from "react-native";
 
 interface SelectMultipleProps {
@@ -34,36 +33,12 @@ export default function SelectMultiple({
   const [selected, setSelected] = useState<Array<{ [key: string]: any }>>([]);
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const animatedHeight = useRef(new Animated.Value(0)).current;
-  const containerRef = useRef<View>(null);
+  const windowHeight = Dimensions.get('window').height;
+  const maxDropdownHeight = Math.min(windowHeight * 0.4, 300);
 
   const filteredOptions = options.filter((item) =>
     item[labelKey].toLowerCase().includes(searchText.toLowerCase())
   );
-
-  const toggleDropdown = () => {
-    if (open) {
-      closeDropdown();
-    } else {
-      setOpen(true);
-      Animated.timing(animatedHeight, {
-        toValue: Math.min(filteredOptions.length, 5) * 48 + 50,
-        duration: 200,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: false,
-      }).start();
-    }
-  };
-
-  const closeDropdown = () => {
-    Animated.timing(animatedHeight, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: false,
-    }).start(() => setOpen(false));
-    setSearchText("");
-  };
 
   const handleSelect = (item: { [key: string]: any }) => {
     const updated = selected.some((s) => s[valueKey] === item[valueKey])
@@ -80,22 +55,15 @@ export default function SelectMultiple({
   };
 
   useEffect(() => {
-    if (open && filteredOptions.length === 0) {
-      Animated.timing(animatedHeight, {
-        toValue: 50,
-        duration: 200,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: false,
-      }).start();
-    }
-  }, [filteredOptions.length]);
+    if (!open) setSearchText("");
+  }, [open]);
 
   return (
-    <View className={`w-full z-10 ${style}`} ref={containerRef} collapsable={false}>
+    <View className={`w-full z-10 ${style}`}>
       {/* Trigger */}
       <TouchableOpacity
         className="border border-secondary-200 rounded px-4 py-3 bg-white min-h-[48px] flex-row flex-wrap items-center"
-        onPress={toggleDropdown}
+        onPress={() => setOpen(true)}
         activeOpacity={0.7}
       >
         {selected.length === 0 ? (
@@ -105,11 +73,11 @@ export default function SelectMultiple({
             {selected.map((item) => (
               <View
                 key={item[valueKey]}
-                className="bg-secondary-100 rounded-full px-3 py-1 flex-row items-center mr-2"
+                className="bg-secondary-100 rounded-full px-3 py-1 flex-row items-center mr-2 mb-1"
               >
                 <Text className="text-neutral-500 mr-2 text-sm">{item[labelKey]}</Text>
                 <TouchableOpacity onPress={() => removeTag(item)}>
-                  <Text className="text-neutral-500 text-lg ml-2">×</Text>
+                  <Text className="text-neutral-500 text-lg">×</Text>
                 </TouchableOpacity>
               </View>
             ))}
@@ -117,88 +85,79 @@ export default function SelectMultiple({
         )}
       </TouchableOpacity>
 
-      {/* Click outside overlay */}
-      {open && (
-        <TouchableWithoutFeedback onPress={closeDropdown}>
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 10,
-            }}
-          />
-        </TouchableWithoutFeedback>
-      )}
-
-      {/* Animated Dropdown */}
-      <Animated.View
-        className="overflow-hidden bg-white rounded shadow border border-secondary-200 absolute w-full"
-        style={{
-          height: animatedHeight,
-          opacity: animatedHeight.interpolate({
-            inputRange: [0, Math.min(filteredOptions.length, 5) * 48 + 50],
-            outputRange: [0, 1],
-          }),
-          zIndex: 20,
-          // Adjust top position based on your layout
-          top: Platform.select({ ios: 50, android: 48 }), // Adjust this value based on your trigger height
-        }}
+      {/* Modal Dropdown */}
+      <Modal
+        visible={open}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setOpen(false)}
       >
-        {/* Search Input */}
-        <View className="px-4 py-2 border-b border-gray-200">
-          <TextInput
-            className="bg-gray-100 rounded px-3 py-2 text-black"
-            placeholder={searchPlaceholder}
-            placeholderTextColor="#999"
-            value={searchText}
-            onChangeText={setSearchText}
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
-        </View>
-
-        {/* Options List */}
-        {filteredOptions.length > 0 ? (
-          <FlatList
-            data={filteredOptions}
-            keyExtractor={(item, idx) => String(item[valueKey]) + idx}
-            scrollEnabled={filteredOptions.length > 5}
-            style={{ maxHeight: 48 * 5 }}
-            keyboardShouldPersistTaps="handled"
-            renderItem={({ item }) => {
-              const isSelected = selected.some(
-                (s) => s[valueKey] === item[valueKey]
-              );
-              return (
-                <TouchableOpacity
-                  className={`px-4 py-3 border-b border-gray-100 flex-row items-center ${
-                    isSelected ? "bg-blue-50" : ""
-                  }`}
-                  onPress={() => handleSelect(item)}
-                >
-                  <View
-                    className={`w-5 h-5 mr-2 border rounded ${
-                      isSelected
-                        ? "bg-secondary-300 border-secondary-200"
-                        : "border-gray-400"
+        <TouchableWithoutFeedback onPress={() => setOpen(false)}>
+          <View className="flex-1 bg-black/50" />
+        </TouchableWithoutFeedback>
+        <View className="absolute top-1/4 left-0 right-0 items-center z-50">
+          <View
+            className="bg-white rounded-2xl w-11/12 max-w-lg overflow-hidden"
+            style={{ maxHeight: maxDropdownHeight }}
+          >
+            {/* Search Input */}
+            <View className="px-4 py-2 border-b border-gray-200">
+              <TextInput
+                className="bg-gray-100 rounded px-3 py-2 text-black"
+                placeholder={searchPlaceholder}
+                placeholderTextColor="#999"
+                value={searchText}
+                onChangeText={setSearchText}
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+            </View>
+            {/* Options List */}
+            <FlatList
+              data={filteredOptions}
+              keyExtractor={(item, idx) => String(item[valueKey]) + idx}
+              keyboardShouldPersistTaps="handled"
+              style={{ flexGrow: 0 }}
+              contentContainerStyle={{ paddingBottom: 8 }}
+              renderItem={({ item }) => {
+                const isSelected = selected.some(
+                  (s) => s[valueKey] === item[valueKey]
+                );
+                return (
+                  <TouchableOpacity
+                    className={`px-4 py-3 border-b border-gray-100 flex-row items-center ${
+                      isSelected ? "bg-blue-50" : ""
                     }`}
+                    onPress={() => handleSelect(item)}
                   >
-                    {isSelected && <Heart color="#fff" size={16} />}
-                  </View>
-                  <Text className="text-black ml-2">{item[labelKey]}</Text>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        ) : (
-          <View className="px-4 py-3">
-            <Text className="text-gray-500 italic">No results found</Text>
+                    <View
+                      className={`w-5 h-5 mr-2 border rounded ${
+                        isSelected
+                          ? "bg-secondary-300 border-secondary-200"
+                          : "border-gray-400"
+                      }`}
+                    >
+                      {isSelected && <Heart color="#fff" size={16} />}
+                    </View>
+                    <Text className="text-black ml-2">{item[labelKey]}</Text>
+                  </TouchableOpacity>
+                );
+              }}
+              ListEmptyComponent={
+                <View className="px-4 py-3">
+                  <Text className="text-gray-500 italic">No results found</Text>
+                </View>
+              }
+            />
+            <TouchableOpacity
+              className="p-3"
+              onPress={() => setOpen(false)}
+            >
+              <Text className="text-[#FFA876] font-bold text-center">Close</Text>
+            </TouchableOpacity>
           </View>
-        )}
-      </Animated.View>
+        </View>
+      </Modal>
     </View>
   );
 }

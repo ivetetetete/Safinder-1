@@ -1,13 +1,14 @@
 import { Tabs } from 'expo-router';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import '../global.css';
+import { Home, Map, MessageSquare, UserRound } from 'lucide-react-native';
 
 const TabsLayout = () => {
     return (
         <Tabs
             screenOptions={{
                 tabBarStyle: {
-                    backgroundColor: '#FFFFD8', 
+                    backgroundColor: '#FFF', 
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 5 },
                     shadowOpacity: 0.3,
@@ -16,7 +17,7 @@ const TabsLayout = () => {
                     height: 85,
                 },
                 tabBarActiveTintColor: '#FF7DB0',
-                tabBarInactiveTintColor: '#FFA876',
+                tabBarInactiveTintColor: '#98A2B3',
                 tabBarLabelStyle: {
                     fontSize: 12,
                     marginBottom: -5,
@@ -33,10 +34,10 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="home"
                 options={{
-                    title: 'home',
+                    title: 'Inicio',
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
-                        <FontAwesome name="home" color={color} size={30} />
+                        <Home color={color} size={30} />
                     ),
                 }}
             />
@@ -44,9 +45,9 @@ const TabsLayout = () => {
                 name="map"
                 options={{
                     headerShown: false,
-                    title: 'map',
+                    title: 'Mapa',
                     tabBarIcon: ({ color, size }) => (
-                        <Entypo name="map" color={color} size={30} />
+                        <Map color={color} size={30} />
                     ),
                 }}
             />
@@ -54,9 +55,9 @@ const TabsLayout = () => {
                 name="chat"
                 options={{
                     headerShown: false,
-                    title: 'chat',
+                    title: 'Chat',
                     tabBarIcon: ({ color, size }) => (
-                        <Entypo name="message" color={color} size={30} />
+                        <MessageSquare color={color} size={30} />
                     ),
                 }}
             />
@@ -64,9 +65,9 @@ const TabsLayout = () => {
                 name="profile"
                 options={{
                     headerShown: false,
-                    title: 'profile',
+                    title: 'Perfil',
                     tabBarIcon: ({ color, size }) => (
-                        <Entypo name="user" color={color} size={30} />
+                        <UserRound color={color} size={30} />
                     ),
                 }}
             />
