@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from "../../library/firebaseConfig";
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FormControl } from '@/components/ui/form-control';
+import { Input, InputField } from '@/components/ui/input';
+import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
 export default function SignUp() {
   const router = useRouter();
@@ -18,16 +21,8 @@ export default function SignUp() {
   const [confirmPasswordHidden, setConfirmPasswordHidden] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const togglePasswordVisibility = () => {
-    setPasswordHidden(!passwordHidden);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setConfirmPasswordHidden(!confirmPasswordHidden);
-  };
-
   const handleSignUp = async () => {
-    if (!username || !email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       setErrorMessage("All fields are required");
       return;
     }
@@ -47,12 +42,13 @@ export default function SignUp() {
       try {
         await setDoc(doc(db, 'users', user.uid), {
           userId: user.uid,
-          username: username,
+          //username: username,
           email: email,
+          firstEntry: true,
         });
         console.log("Firestore document created successfully");
         router.push({
-          pathname: '/(profile)/welcome',
+          pathname: '/userInfo',
           params: { userId: user.uid }
         });
       } catch (firestoreError: any) {
@@ -73,81 +69,84 @@ export default function SignUp() {
       end={{ x: 0, y: 0 }}
       className='h-screen'
     >
-      <SafeAreaView className="flex-1">
+      <SafeAreaView className='flex-1'>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1 justify-center px-6"
         >
-          <View className="bg-white rounded-3xl p-8 shadow-lg">
-          <Text className="text-4xl font-bold text-[#FFA876] mb-6 text-center">Welcome to Safinder</Text>
+          <Image
+            source={require('../../assets/images/safinder-logo.png')}
+            style={{ position: 'absolute', top: 13, right: 0 }}
+            resizeMode="cover"
+            className="w-56 h-56"
+          />
+          <View className="bg-white h-screen mt-32 rounded-3xl p-8 shadow-lg">
+            <View className='mb-2'>
+              <Text className="text-4xl font-bold text-secondary-200 mb-4">Registro</Text>
 
-            {errorMessage ? (
-              <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
-            ) : null}
-
-            <View className="space-y-4">
-              <View className="border border-[#FFA876] rounded-xl mb-3 ">  
-                <TextInput
-                  placeholder="Username"
-                  value={username}
-                  onChangeText={setUsername}
-                  className="px-4 py-3 text-black "
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <View className="border border-[#FFA876] rounded-xl mb-3">
-                <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  className="px-4 py-3 text-black "
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                />
-              </View>
-
-              <View className="border border-[#FFA876] rounded-xl mb-3 flex-row items-center">
-                <TextInput
-                  placeholder="Password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={passwordHidden}
-                  className="flex-1 px-4 py-3 text-black "
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity onPress={togglePasswordVisibility} className="pr-4">
-                  <Ionicons
-                    name={passwordHidden ? 'eye-outline' : 'eye-off-outline'}
-                    size={24}
-                    color="#FFA876"
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View className="border border-[#FFA876] rounded-xl flex-row items-center">
-                <TextInput
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={confirmPasswordHidden}
-                  className="flex-1 px-4 py-3 text-black"
-                  placeholderTextColor="#FFA876"
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity onPress={toggleConfirmPasswordVisibility} className="pr-4">
-                  <Ionicons
-                    name={confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
-                    size={24}
-                    color="#FFA876"
-                  />
-                </TouchableOpacity>
-              </View>
+              {errorMessage ? (
+                <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
+              ) : null}
             </View>
+            <View className="gap-y-4">
+              <FormControl isRequired>
+                <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                  <InputField
+                    className=" text-base px-0"
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                  //accessibilityLabel={t("name_label")}
+                  />
+                </Input>
+              </FormControl>
 
+              <FormControl isRequired>
+                <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                  <InputField
+                    placeholder="Contraseña"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={passwordHidden}
+                    className="text-base px-0"
+                  //accessibilityLabel={t("name_label")}
+                  />
+                  <TouchableOpacity onPress={() => setPasswordHidden(!passwordHidden)} className="pr-4">
+                    <Ionicons
+                      name={passwordHidden ? 'eye-outline' : 'eye-off-outline'}
+                      size={24}
+                      color="gray"
+                    />
+                  </TouchableOpacity>
+                </Input>
+              </FormControl>
+
+              <FormControl isRequired>
+                <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                  <InputField
+                    placeholder="Repetir Contraseña"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={confirmPasswordHidden}
+                    className="text-base px-0"
+                  //accessibilityLabel={t("name_label")}
+                  />
+                  <TouchableOpacity onPress={() => setConfirmPasswordHidden(!confirmPasswordHidden)} className="pr-4">
+                    <Ionicons
+                      name={confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
+                      size={24}
+                      color="gray"
+                    />
+                  </TouchableOpacity>
+                </Input>
+              </FormControl>
+
+
+            </View>
             <TouchableOpacity
               onPress={handleSignUp}
               className="bg-[#FFA876] mt-6 py-3 rounded-2xl"
@@ -156,16 +155,16 @@ export default function SignUp() {
             </TouchableOpacity>
 
             <View className="flex-row justify-center mt-6">
-              <Text className="text-gray-400">Already have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/login')}>
-                <Text className="text-[#FF7DB0] font-bold">Log In</Text>
+              <Text className="text-gray-400">¿Ya tienes una cuenta? </Text>
+              <TouchableOpacity onPress={() => router.push('/userInfo')}>
+                <Text className="text-[#FF7DB0] font-bold">Inicia sesión</Text>
               </TouchableOpacity>
             </View>
           </View>
+
         </KeyboardAvoidingView>
       </SafeAreaView>
     </LinearGradient>
-
   );
 }
 

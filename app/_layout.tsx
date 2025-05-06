@@ -6,7 +6,6 @@ import { Stack } from 'expo-router';
 import './global.css';
 import { auth } from '../library/firebaseConfig';
 
-
 const CLERK_PUBLISHABLE_KEY = "pk_test_c291Z2h0LWxlZWNoLTUzLmNsZXJrLmFjY291bnRzLmRldiQ";
 
 const RootLayout = () => {

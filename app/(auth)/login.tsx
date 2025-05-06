@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../library/firebaseConfig';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FormControl } from '@/components/ui/form-control';
+import { Input, InputField } from '@/components/ui/input';
 
 
 export default function Login() {
@@ -41,47 +43,56 @@ export default function Login() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
+          <Image
+            source={require('../../assets/images/safinder-logo.png')}
+            style={{ position: 'absolute', top: 13, right: 0}}
+            resizeMode="cover"
+            className="w-56 h-56"
+          />
           <View className="bg-white h-screen mt-32 rounded-3xl p-8 shadow-lg">
-            <Text className="text-4xl font-bold text-primary-600 mb-6 text-center">Welcome to Safinder</Text>
-
+            <Text className="text-4xl font-bold text-primary-600 mb-6">Inicio de sesión</Text>
 
             {errorMessage ? (
               <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
             ) : null}
 
 
-            <View className="space-y-2">
-              <View className="border border-primary-600 rounded-xl mb-3">
-                <TextInput
-                  placeholder="email"
-                  value={email}
-                  onChangeText={setEmail}
-                  className="px-4 py-3 text-black"
-                  placeholderTextColor="#FF7DB0"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                />
-              </View>
-
-
-              <View className="border border-[#FF7DB0] rounded-xl flex-row items-center">
-                <TextInput
-                  placeholder="password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={passwordHidden}
-                  className="flex-1 px-4 py-3 text-white"
-                  placeholderTextColor="#FF7DB0"
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity onPress={() => setPasswordHidden(!passwordHidden)} className="pr-4">
-                  <Ionicons
-                    name={passwordHidden ? 'eye-outline' : 'eye-off-outline'}
-                    size={24}
-                    color="gray"
+            <View className="gap-y-4">
+              <FormControl isRequired>
+                <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                  <InputField
+                    className=" text-base px-0"
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                  //accessibilityLabel={t("name_label")}
                   />
-                </TouchableOpacity>
-              </View>
+                </Input>
+              </FormControl>
+
+              <FormControl isRequired>
+                <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                  <InputField
+                    placeholder="Contraseña"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={passwordHidden}
+                    className="text-base px-0"
+                  //accessibilityLabel={t("name_label")}
+                  />
+                  <TouchableOpacity onPress={() => setPasswordHidden(!passwordHidden)} className="pr-4">
+                    <Ionicons
+                      name={passwordHidden ? 'eye-outline' : 'eye-off-outline'}
+                      size={24}
+                      color="gray"
+                    />
+                  </TouchableOpacity>
+                </Input>
+              </FormControl>
             </View>
 
 
@@ -92,9 +103,9 @@ export default function Login() {
               <Text className="text-white font-bold text-center text-lg">Login</Text>
             </TouchableOpacity>
             <View className="flex-row justify-center mt-6">
-              <Text className="text-gray-400">You don't have an account? </Text>
+              <Text className="text-gray-400">¿Todavía no tienes una cuenta? </Text>
               <TouchableOpacity onPress={() => router.push('/signup')}>
-                <Text className="text-[#FFA876] font-bold">Sign up</Text>
+                <Text className="text-[#FFA876] font-bold">Regístrate</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -102,5 +113,6 @@ export default function Login() {
       </SafeAreaView>
     </LinearGradient>
   );
-}
+};
+
 
