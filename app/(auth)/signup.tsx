@@ -72,7 +72,7 @@ export default function SignUp() {
       <SafeAreaView className='flex-1'>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1"
+          className="flex-1 justify-center px-6"
         >
           <Image
             source={require('../../assets/images/safinder-logo.png')}
@@ -149,7 +149,7 @@ export default function SignUp() {
             </View>
             <TouchableOpacity
               onPress={handleSignUp}
-              className="bg-secondary-200 mt-6 py-3 rounded-2xl"
+              className="bg-[#FFA876] mt-6 py-3 rounded-2xl"
             >
               <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
             </TouchableOpacity>
