@@ -37,7 +37,7 @@ export default function HomeScreen() {
             <Text className="font-bold text-white text-3xl text-right">3 days 2 hours 40 min</Text>
           </View> */}
 
-          <FormControl label="Cuestionario" isRequired>
+          <FormControl isRequired>
             <View>
               {questions.map(q => (
                 <View key={q.id} className="mb-4 border border-neutral-200 rounded-xl p-4 bg-white">
