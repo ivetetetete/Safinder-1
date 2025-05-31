@@ -77,6 +77,11 @@ export default function HomeScreen() {
               ))}
             </View>
           </FormControl>
+          <TouchableOpacity className='w-full' onPress={() => router.push('/match')}>
+            <View className="bg-primary-700 p-4 rounded-xl mb-5">
+              <Text className="text-white text-center font-bold text-lg">Enviar respuestas</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
