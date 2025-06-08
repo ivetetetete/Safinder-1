@@ -7,6 +7,8 @@ import Svg, { G, Path } from "react-native-svg";
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../library/firebaseConfig";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FormControl } from '@/components/ui/form-control';
+import { Input, InputField } from '@/components/ui/input';
 
 
 const EditProfile = () => {
@@ -82,46 +84,114 @@ const EditProfile = () => {
         }
     };
 
+    const formatDate = (date: Date) => {
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     return (
         <SafeAreaView className="flex flex-col w-full max-w-md mx-auto bg-yellow-50 min-h-screen overflow-y-auto">
             <ScrollView className='p-4'>
                 <View className=''>
                     <Text className="font-bold text-center text-lg text-amber-800">Edit profile</Text>
-                    <View className='gap-y-2'>
-                        {/*          <div className="relative">
-           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <Mail size={18} color="#FFA876" />
-            </div>
-            <input 
-              type="email" 
-              placeholder="Email address"
-              className="w-full py-3 pl-10 pr-4 bg-yellow-50 border border-yellow-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-amber-900"
-            />
-          </div> */}
-
-                        <TextInput
-                            placeholder="Nombre"
-                            value={name}
-                            onChangeText={setName}
-                            className="px-4 py-3 border border-pink-500 rounded-xl disabled:opacity-40"
-                            //readOnly
-                            placeholderTextColor={"#FFA876"}
-                        />
-                        <TextInput
-                            placeholder="Apellidos"
-                            value={surname}
-                            onChangeText={setSurname}
-                            className="px-4 py-3 border border-pink-500 rounded-xl disabled:opacity-40"
-                            // readOnly
-                            placeholderTextColor={"#FFA876"}
-                        />
+                    <View className='gap-y-4'>
+                        <View>
+                            <Image
+                                source={require('../../assets/images/safinder-logo.png')}
+                                style={{ width: 100, height: 100, alignSelf: 'center', marginTop: 20 }}
+                                resizeMode="cover"
+                            />
+                        </View>
+                        <FormControl isRequired>
+                            <View className='flex-row items-center mb-2 gap-x-1'>
+                                <Text>Nombre</Text>
+                                <Text className="text-red-400">*</Text>
+                            </View>
+                            <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                                <InputField
+                                    className=" text-base px-0"
+                                    placeholder="Email"
+                                    value={name}
+                                    onChangeText={setName}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                //accessibilityLabel={t("name_label")}
+                                />
+                            </Input>
+                        </FormControl>
+                        <FormControl isRequired>
+                            <View className='flex-row items-center mb-2 gap-x-1'>
+                                <Text>Apellidos</Text>
+                                <Text className="text-red-400">*</Text>
+                            </View>
+                            <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                                <InputField
+                                    className=" text-base px-0"
+                                    placeholder="Surname"
+                                    value={surname}
+                                    onChangeText={setSurname}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                //accessibilityLabel={t("name_label")}
+                                />
+                            </Input>
+                        </FormControl>
+                        <FormControl isRequired>
+                            <View className='flex-row items-center mb-2 gap-x-1'>
+                                <Text>Fecha de nacimiento</Text>
+                                <Text className="text-red-400">*</Text>
+                            </View>
+                            <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                                <InputField
+                                    className=" text-base px-0"
+                                    placeholder="Fecha de nacimiento"
+                                    value= {dob ? formatDate(dob) : "dd/mm/yyyy"}
+                                    onChangeText={(text) => setDob(new Date(text))}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                //accessibilityLabel={t("name_label")}
+                                />
+                            </Input>
+                        </FormControl>
+                        <FormControl isRequired>
+                            <View className='flex-row items-center mb-2 gap-x-1'>
+                                <Text>Biografía</Text>
+                                <Text className="text-red-400">*</Text>
+                            </View>
+                            <Input action='primary' className="rounded-xl py-2.5 px-3.5 h-40 items-start" size="xl">
+                                <InputField
+                                    className=" text-base px-0 h-5"
+                                    placeholder="Descripción"
+                                    value={bio}
+                                    onChangeText={setBio}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                //accessibilityLabel={t("name_label")}
+                                />
+                            </Input>
+                        </FormControl>
+                        <FormControl isRequired>
+                            <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                                <InputField
+                                    className=" text-base px-0"
+                                    placeholder="Country"
+                                    value={country}
+                                    onChangeText={setCountry}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                //accessibilityLabel={t("name_label")}
+                                />
+                            </Input>
+                        </FormControl>
+                        <TouchableOpacity
+                            onPress={saveDetails}
+                            className="bg-pink-500 py-3 rounded-lg mb-8"
+                        >
+                            <Text className="text-white text-center font-bold px-6 py-2">Save</Text>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                        onPress={saveDetails}
-                        className="bg-pink-500 py-3 rounded-lg mb-8"
-                    >
-                        <Text className="text-white text-center font-bold px-6 py-2">Save</Text>
-                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </SafeAreaView>
