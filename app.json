@@ -33,7 +33,8 @@
       "expo-router",
       "expo-font",
       "expo-secure-store",
-      "expo-build-properties"
+      "expo-build-properties",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,18 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, TextInput, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useRouter } from 'expo-router';
-import { getAuth } from 'firebase/auth';
-import 'tailwindcss/tailwind.css';
-import MapView, { Marker } from 'react-native-maps';
-import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { getAuth } from "firebase/auth";
+import "tailwindcss/tailwind.css";
+import MapView, { Marker } from "react-native-maps";
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  updateDoc,
+  doc,
+  arrayUnion,
+  addDoc,
+  collection,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { auth, db } from "../../library/firebaseConfig";
-import InputLocation from '@/components/InputLocation';
-import { Calendar, CalendarDays, MapPinned, Volleyball } from 'lucide-react-native';
-import { FormControl } from '@/components/ui/form-control';
-import { Input, InputField } from '@/components/ui/input';
-import { Button, ButtonText } from '@/components/ui/button';
+import InputLocation from "@/components/InputLocation";
+import {
+  Calendar,
+  CalendarDays,
+  MapPinned,
+  Volleyball,
+} from "lucide-react-native";
+import { FormControl } from "@/components/ui/form-control";
+import { Input, InputField } from "@/components/ui/input";
+import { Button, ButtonText } from "@/components/ui/button";
 
 interface Event {
   id: string;
@@ -31,14 +53,14 @@ const MapScreen = () => {
   const authInstance = getAuth();
   const user = authInstance.currentUser;
 
-  console.log('User:', user);
-  console.log('userIdName:', user?.uid);
+  //console.log("User:", user);
+  //console.log("userIdName:", user?.uid);
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(new Date(2000, 0, 1, 12, 0)); 
-  const [selectedAddress, setSelectedAddress] = useState('');
+  const [selectedTime, setSelectedTime] = useState(new Date(2000, 0, 1, 12, 0));
+  const [selectedAddress, setSelectedAddress] = useState("");
   const [selectedLat, setSelectedLat] = useState<number>(0);
   const [selectedLon, setSelectedLon] = useState<number>(0);
 
@@ -51,43 +73,42 @@ const MapScreen = () => {
   const toggleModal = () => setIsModalVisible(!isModalVisible);
 
   const toggleModalEvent = () => {
-    setIsModalEventVisible(!isModalEventVisible)
+    setIsModalEventVisible(!isModalEventVisible);
   };
 
   //modal evento
   const [isModalEventVisible, setIsModalEventVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
 
-        const eventsCollection = collection(db, 'events');
+        const eventsCollection = collection(db, "events");
         const querySnapshot = await getDocs(eventsCollection);
 
         const fetchedEvents: Event[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          console.log('Data:', data);
+          //console.log('Data:', data);
           fetchedEvents.push({
             id: doc.id,
             idUser: data.userId,
-            title: data.title || 'Sin título',
-            description: data.description || '',
-            address: data.address || '',           // <-- Read address
-            latitude: data.latitude,               // <-- Use latitude
+            title: data.title || "Sin título",
+            description: data.description || "",
+            address: data.address || "", // <-- Read address
+            latitude: data.latitude, // <-- Use latitude
             longitude: data.longitude,
             date: data.date || new Date().toDateString(),
             hour: data.hour || new Date().toTimeString().slice(0, 5),
           });
         });
 
-        console.log('Fetched events:', fetchedEvents);
+        //console.log('Fetched events:', fetchedEvents);
         setEvents(fetchedEvents);
       } catch (error) {
-        console.error('Error fetching events: ', error);
+        console.error("Error fetching events: ", error);
       } finally {
         setLoading(false);
       }
@@ -97,9 +118,8 @@ const MapScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Events state updated:', events);
+    //console.log('Events state updated:', events);
   }, [events]);
-
 
   const handleMarkerPress = (event: Event) => {
     setSelectedEvent(event);
@@ -122,7 +142,6 @@ const MapScreen = () => {
     setShowDatePicker(true);
   };
 
-
   const openPickerTime = () => {
     setSelectedTime(selectedTime || new Date(2000, 0, 1, 12, 0)); // Default time set to 12:00 PM
     setShowTimePicker(true);
@@ -135,76 +154,95 @@ const MapScreen = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const handleJoinGroup = async () => {
+    if (!user || !selectedEvent) return;
+    try {
+      const eventRef = doc(db, "events", selectedEvent.id);
+      await updateDoc(eventRef, {
+        joiners_id: arrayUnion(user.uid),
+      });
+      alert("¡Te has unido al grupo!");
+    } catch (error) {
+      console.error("Error joining group:", error);
+      alert("Hubo un error al unirte al grupo.");
+    }
+  };
 
-
-  const createEvent = () => {
+  const createEvent = async () => {
     const userId = user?.uid;
-    //const { latitude, longitude } = getRandomCoordinatesInCatalonia();
 
     const newEvent = {
       idUser: userId,
-      title: title || 'Sin título',
-      description: description || '',
-      address: selectedAddress,      // <-- Use 'address' consistently
+      title: title || "Sin título",
+      description: description || "",
+      address: selectedAddress,
       latitude: selectedLat,
       longitude: selectedLon,
       date: selectedDate.toDateString(),
       hour: selectedTime.toTimeString().slice(0, 5),
       userId: userId,
+      joiners_id: [userId],
     };
 
-    addDoc(collection(db, 'events'), newEvent)
-      .then((docRef) => {
-        setEvents((prevEvents) => [
-          ...prevEvents,
-          {
-            id: docRef.id,
-            idUser: userId || '',
-            title: newEvent.title,
-            description: newEvent.description,
-            address: newEvent.address,           // <-- Add address here
-            latitude: Number(newEvent.latitude),
-            longitude: Number(newEvent.longitude),
-            date: newEvent.date,
-            hour: newEvent.hour,
-          },
-        ]);
-        setTitle('');
-        setDescription('');
-        setSelectedDate(new Date());
-        setSelectedTime(new Date());
-        setSelectedAddress('');
-        setSelectedLat(0);
-        setSelectedLon(0);
-        toggleModal();
-      })
-      .catch((error) => {
-        console.error('Create Event Error: ', error);
+    try {
+      const docRef = await addDoc(collection(db, "events"), newEvent);
+
+      await addDoc(collection(db, "events", docRef.id, "groupChat"), {
+        text: "¡Bienvenida al chat del evento!",
+        senderId: userId,
+        timestamp: serverTimestamp(),
+        system: true,
       });
+
+      setEvents((prevEvents) => [
+        ...prevEvents,
+        {
+          id: docRef.id,
+          idUser: userId || "",
+          title: newEvent.title,
+          description: newEvent.description,
+          address: newEvent.address,
+          latitude: Number(newEvent.latitude),
+          longitude: Number(newEvent.longitude),
+          date: newEvent.date,
+          hour: newEvent.hour,
+        },
+      ]);
+      setTitle("");
+      setDescription("");
+      setSelectedDate(new Date());
+      setSelectedTime(new Date());
+      setSelectedAddress("");
+      setSelectedLat(0);
+      setSelectedLon(0);
+      toggleModal();
+    } catch (error) {
+      console.error("Create Event Error: ", error);
+    }
   };
 
   function capitalize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-
   return (
     <>
       {loading ? (
         <Text>Loading events...</Text>
       ) : (
-        <View className='flex-1'>
+        <View className="flex-1">
           <MapView
             style={{ flex: 1 }}
             initialRegion={{
-              latitude: 41.8204600,
-              longitude: 1.8676800,
+              latitude: 41.82046,
+              longitude: 1.86768,
               latitudeDelta: 2.5,
               longitudeDelta: 2.5,
             }}
           >
             {events.map((event) => (
-              <Marker key={event.id}
+              <Marker
+                key={event.id}
                 //onPress={toggleModalEvent}
                 coordinate={{
                   latitude: event.latitude,
@@ -215,11 +253,10 @@ const MapScreen = () => {
                   toggleModalEvent();
                 }}
               >
-                <View className='w-28 p-5 bg-tertiary-300 rounded-md'
-                >
-                  <Text className='text-center font-bold'>{event.title}</Text>
+                <View className="w-28 p-5 bg-tertiary-300 rounded-md">
+                  <Text className="text-center font-bold">{event.title}</Text>
                   {/* <Text className='text-center'>{event.description}</Text> */}
-                  <View className='rounded-full  bg-tertiary-400 p-2 mx-auto'>
+                  <View className="rounded-full  bg-tertiary-400 p-2 mx-auto">
                     <Volleyball size={16} color="white" />
                   </View>
                 </View>
@@ -236,41 +273,57 @@ const MapScreen = () => {
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
               <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.5)]">
                 <View className="w-[90%] p-5 bg-white rounded-lg gap-y-3">
-                  <Text className="font-semibold text-lg">{selectedEvent?.title}</Text>
-                  <View className='flex flex-row gap-x-2'>
+                  <Text className="font-semibold text-lg">
+                    {selectedEvent?.title}
+                  </Text>
+                  <View className="flex flex-row gap-x-2">
                     <MapPinned size={20} color="black" />
-                    <Text className="text-sm text-neutral-400 w-fit text-ellipsis">{selectedEvent?.address}</Text>
+                    <Text className="text-sm text-neutral-400 w-fit text-ellipsis">
+                      {selectedEvent?.address}
+                    </Text>
                   </View>
-                  <View className='flex flex-row gap-x-2'>
+                  <View className="flex flex-row gap-x-2">
                     <CalendarDays size={20} color="black" />
-                    <Text className="text-sm text-neutral-400">{selectedEvent?.date
-                      ? capitalize(
-                        new Date(selectedEvent.date).toLocaleDateString('es-ES', {
-                          weekday: 'long',
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })
-                      )
-                      : ''} {selectedEvent?.hour}</Text>
+                    <Text className="text-sm text-neutral-400">
+                      {selectedEvent?.date
+                        ? capitalize(
+                            new Date(selectedEvent.date).toLocaleDateString(
+                              "es-ES",
+                              {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              }
+                            )
+                          )
+                        : ""}{" "}
+                      {selectedEvent?.hour}
+                    </Text>
                   </View>
 
-                  <Text className="text-lg text-neutral-400">{selectedEvent?.description}</Text>
+                  <Text className="text-lg text-neutral-400">
+                    {selectedEvent?.description}
+                  </Text>
 
-                  <View className='flex flex-row gap-3 items-center'>
+                  <View className="flex flex-row gap-3 items-center">
                     <TouchableOpacity
                       //onPress={toggleModalEvent}
                       className="flex-1 bg-primary-500 justify-center items-center h-12 rounded-lg"
                       activeOpacity={0.7}
                     >
-                      <Text className="text-primary-700 font-semibold">Voy a ir!</Text>
+                      <Text className="text-primary-700 font-semibold">
+                        Voy a ir!
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      //onPress={toggleModalEvent}
+                      onPress={handleJoinGroup}
                       className="flex-1 bg-secondary-100 justify-center items-center h-12 rounded-lg"
                       activeOpacity={0.7}
                     >
-                      <Text className="text-secondary-300 font-semibold">Unirme al grupo</Text>
+                      <Text className="text-secondary-300 font-semibold">
+                        Unirme al grupo
+                      </Text>
                     </TouchableOpacity>
                   </View>
                   <TouchableOpacity
@@ -278,7 +331,9 @@ const MapScreen = () => {
                     className="w-full bg-tertiary-200 justify-center items-center h-12 rounded-lg"
                     activeOpacity={0.7}
                   >
-                    <Text className="text-tertiary-700 font-semibold">Cerrar</Text>
+                    <Text className="text-tertiary-700 font-semibold">
+                      Cerrar
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -288,39 +343,53 @@ const MapScreen = () => {
           {/* Botón crear evento */}
           <View className="absolute z-30 right-8 top-12">
             <TouchableOpacity onPress={toggleModal}>
-              <Ionicons name={'add-circle-outline'} size={36} color="white" />
+              <Ionicons name={"add-circle-outline"} size={36} color="white" />
             </TouchableOpacity>
           </View>
 
           {/* Modal Form */}
-          <Modal transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
+          <Modal
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={toggleModal}
+          >
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
               <View className="flex-1 justify-center items-center bg-[rgba(0,0,0,0.5)]">
                 <View className="w-[90%] p-5 bg-white rounded-xl gap-y-3">
-                  <Text className="font-semibold text-lg mb-3 text-center">Crear evento</Text>
+                  <Text className="font-semibold text-lg mb-3 text-center">
+                    Crear evento
+                  </Text>
 
                   <FormControl isRequired>
-                    <Text className='font-semibold mb-1'>Título</Text>
-                    <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                    <Text className="font-semibold mb-1">Título</Text>
+                    <Input
+                      action="secondary"
+                      className="rounded-xl py-2.5 px-3.5"
+                      size="xl"
+                    >
                       <InputField
                         className=" text-base px-0"
                         placeholder="Escribe un título"
                         value={title}
                         onChangeText={setTitle}
-                      //accessibilityLabel={t("name_label")}
+                        //accessibilityLabel={t("name_label")}
                       />
                     </Input>
                   </FormControl>
                   <FormControl isRequired>
-                    <Text className='font-semibold mb-1'>Descripción</Text>
+                    <Text className="font-semibold mb-1">Descripción</Text>
 
-                    <Input action='secondary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                    <Input
+                      action="secondary"
+                      className="rounded-xl py-2.5 px-3.5"
+                      size="xl"
+                    >
                       <InputField
                         className=" text-base px-0"
                         placeholder="Escribe una descripción"
                         value={description}
                         onChangeText={setDescription}
-                      //accessibilityLabel={t("name_label")}
+                        //accessibilityLabel={t("name_label")}
                       />
                     </Input>
                   </FormControl>
@@ -333,21 +402,27 @@ const MapScreen = () => {
                       setSelectedLat(Number(lat));
                       setSelectedLon(Number(lon));
                     }}
-                    label='Dirección'
+                    label="Dirección"
                     placeholder="Escribe una dirección"
                   />
 
-
                   <Text className="font-semibold">Seleccionar fecha</Text>
                   <View className="border border-secondary-200  rounded flex-row items-center">
-                    <TouchableOpacity onPress={openPickerDate} activeOpacity={1} className="flex-1 flex-row justify-between px-4 py-3">
-                      <Text className={selectedDate ? "text-black" : "text-neutral-400"}>
+                    <TouchableOpacity
+                      onPress={openPickerDate}
+                      activeOpacity={1}
+                      className="flex-1 flex-row justify-between px-4 py-3"
+                    >
+                      <Text
+                        className={
+                          selectedDate ? "text-black" : "text-neutral-400"
+                        }
+                      >
                         {selectedDate ? formatDate(selectedDate) : "dd/mm/yyyy"}
                       </Text>
                       <Calendar size={20} color={"#98A2B3"} />
                     </TouchableOpacity>
                   </View>
-
 
                   {showDatePicker && (
                     <Modal
@@ -363,12 +438,13 @@ const MapScreen = () => {
                             themeVariant="light"
                             value={selectedDate || new Date()}
                             mode="date"
-                            display={Platform.OS === "ios" ? "inline" : "default"}
+                            display={
+                              Platform.OS === "ios" ? "inline" : "default"
+                            }
                             onChange={onChangeDate}
                             minimumDate={new Date()}
                           />
                           <View className="flex flex-row justify-between w-full mt-4 space-x-2">
-
                             <Button
                               size="md"
                               className="flex-1"
@@ -384,9 +460,19 @@ const MapScreen = () => {
 
                   <Text className="font-semibold">Seleccionar hora</Text>
                   <View className="border border-secondary-200  rounded flex-row items-center">
-                    <TouchableOpacity onPress={openPickerTime} activeOpacity={1} className="flex-1 flex-row justify-between px-4 py-3">
-                      <Text className={selectedTime ? "text-black" : "text-neutral-400"}>
-                        {selectedTime ? selectedTime.toTimeString().slice(0, 5) : "HH:mm"}
+                    <TouchableOpacity
+                      onPress={openPickerTime}
+                      activeOpacity={1}
+                      className="flex-1 flex-row justify-between px-4 py-3"
+                    >
+                      <Text
+                        className={
+                          selectedTime ? "text-black" : "text-neutral-400"
+                        }
+                      >
+                        {selectedTime
+                          ? selectedTime.toTimeString().slice(0, 5)
+                          : "HH:mm"}
                       </Text>
                       <Calendar size={20} color={"#98A2B3"} />
                     </TouchableOpacity>
@@ -408,10 +494,8 @@ const MapScreen = () => {
                             is24Hour={true}
                             display={"spinner"}
                             onChange={onChangeTime}
-
                           />
                           <View className="flex flex-row justify-between w-full mt-4 space-x-2">
-
                             <Button
                               size="md"
                               className="flex-1"
@@ -429,7 +513,9 @@ const MapScreen = () => {
                     className="w-full mt-6 bg-black justify-center items-center h-12 rounded-lg"
                     onPress={createEvent}
                   >
-                    <Text className="text-white font-semibold">Crear evento</Text>
+                    <Text className="text-white font-semibold">
+                      Crear evento
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     className="w-full bg-gray-200 justify-center items-center h-12 rounded-lg"
