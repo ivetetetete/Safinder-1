@@ -1,27 +1,26 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput, Modal, TouchableWithoutFeedback, FlatList, Alert } from 'react-native';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, Modal, Alert, ScrollView } from 'react-native';
+import { getAuth } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { auth, db } from "../../library/firebaseConfig";
+import { db } from "../../library/firebaseConfig";
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { FormControl } from '@/components/ui/form-control';
 import { Input, InputField } from '@/components/ui/input';
-
 import Select from '@/components/Select';
 import SelectMultiple from '@/components/SelectMultiple';
 import { Button, ButtonText } from '@/components/ui/button';
-import { ScrollView } from 'react-native';
 import { Divider } from '@/components/ui/divider';
 import { Calendar } from 'lucide-react-native';
+import { merge } from 'lodash';
 
 export default function UserInfo() {
     const auth = getAuth();
     const userId = auth.currentUser?.uid;
 
     const router = useRouter();
+    const [id, setId] = useState(userId || '');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [dob, setDob] = useState<Date | null>(null);
@@ -135,10 +134,17 @@ export default function UserInfo() {
 
     //surnamw
     const handleUserData = async () => {
-        if (!name || !dob || !pronouns || !country || !city || !gender || !hobbies) {
+
+        if (!userId) {
+            setErrorMessage("User not authenticated");
+            return;
+        }
+
+        if (!name || !surname || !dob || !pronouns || !country || !city || !gender || !hobbies) {
             setErrorMessage("All fields are required");
             return;
         }
+
 
         try {
             const userDocRef = doc(db, "users", userId as string);
@@ -152,10 +158,10 @@ export default function UserInfo() {
                 city,
                 gender,
                 bio
-            });
+            }, { merge: true });
             router.push({
-                pathname: '/home',
-                params: { name: name }
+                pathname: '/createProfile',
+                params: { id: userId }
             });
 
             console.log("User details saved successfully");
@@ -175,22 +181,15 @@ export default function UserInfo() {
     console.log("Hobbies:", hobbies);
 
     return (
-        // <LinearGradient
-        //     colors={['#ff7db0', '#ffd43b']}
-        //     style={{ flex: 1 }}
-        //     start={{ x: 0, y: 1 }}
-        //     end={{ x: 0, y: 0 }}
-        //     className='h-screen'
-        // >
-        <SafeAreaView className='flex-1 bg-yellow-400'>
+        <SafeAreaView className='flex-1 bg-yellow-50'>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled">
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     className="flex-1"
                 >
-                    <Text className="text-2xl p-5 font-bold text-white">Crea tu cuenta</Text>
-                    <View className="bg-white mt-15 p-5">
+                    <Text className="text-4xl p-5 font-bold text-yellow-400">Crea tu cuenta</Text>
+                    <View className="bg-yellow-50 p-5">
                         <View className='mb-2'>
                             {errorMessage ? (
                                 <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
@@ -260,7 +259,7 @@ export default function UserInfo() {
                                         <View className="bg-white p-4 rounded-lg mx-5 items-center">
                                             <DateTimePicker
                                                 textColor="orange"
-                                                accentColor="#ffa876"
+                                                accentColor="#ffb6d7"
                                                 themeVariant="light"
                                                 value={tempDob || new Date(2000, 0, 1)}
                                                 mode="date"
@@ -268,7 +267,7 @@ export default function UserInfo() {
                                                 onChange={onChangeDob}
                                                 maximumDate={new Date()}
                                             />
-                                            <View className="flex flex-row justify-between w-full mt-4 space-x-2">
+                                            <View className="flex flex-row justify-between w-full mt-4 gap-x-2">
                                                 <Button
                                                     variant="outline"
                                                     size="md"
@@ -279,10 +278,10 @@ export default function UserInfo() {
                                                 </Button>
                                                 <Button
                                                     size="md"
-                                                    className="flex-1"
+                                                    className="flex-1 "
                                                     onPress={handleAccept}
                                                 >
-                                                    <ButtonText>Aceptar</ButtonText>
+                                                    <ButtonText className='text-white'>Aceptar</ButtonText>
                                                 </Button>
                                             </View>
                                         </View>
@@ -314,14 +313,14 @@ export default function UserInfo() {
                                         return (
                                             <TouchableOpacity
                                                 key={item.key}
-                                                className={`border rounded-lg p-2 ${isSelected
-                                                    ? 'border-secondary-200 bg-secondary-100'
-                                                    : 'border-neutral-200 bg-neutral-200'
+                                                className={`rounded-2xl p-2 ${isSelected
+                                                    ? 'border border-secondary-300 bg-secondary-100'
+                                                    : ' bg-tertiary-600'
                                                     }`}
                                                 onPress={() => setGender(item.value)}
                                             >
                                                 <Text
-                                                    className={`text-sm ${isSelected ? 'text-neutral-50 font-bold' : 'text-secondary-200'
+                                                    className={`text-sm text-tertiary-50 ${isSelected ? 'font-bold' : ''
                                                         }`}
                                                 >
                                                     {item.value}
@@ -344,14 +343,14 @@ export default function UserInfo() {
                                         return (
                                             <TouchableOpacity
                                                 key={item.key}
-                                                className={`border rounded-lg p-2 ${isSelected
-                                                    ? 'border-secondary-200 bg-secondary-100'
-                                                    : 'border-neutral-200 bg-neutral-200'
+                                                className={`rounded-2xl p-2 ${isSelected
+                                                    ? 'border border-secondary-300 bg-secondary-100'
+                                                    : ' bg-tertiary-600'
                                                     }`}
                                                 onPress={() => setPronouns(item.value)}
                                             >
                                                 <Text
-                                                    className={`text-sm ${isSelected ? 'text-neutral-50 font-bold' : 'text-secondary-200'
+                                                    className={`text-sm text-tertiary-50 ${isSelected ? 'font-bold' : ''
                                                         }`}
                                                 >
                                                     {item.value}
@@ -594,9 +593,5 @@ export default function UserInfo() {
 
             </ScrollView>
         </SafeAreaView>
-        //</LinearGradient> 
-
     );
 }
-
-// you're the smartest 

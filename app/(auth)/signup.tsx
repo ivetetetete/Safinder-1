@@ -44,7 +44,6 @@ export default function SignUp() {
           userId: user.uid,
           //username: username,
           email: email,
-          firstEntry: true,
         });
         console.log("Firestore document created successfully");
         router.push({
@@ -72,7 +71,7 @@ export default function SignUp() {
       <SafeAreaView className='flex-1'>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1 justify-center px-6"
+          className="flex-1"
         >
           <Image
             source={require('../../assets/images/safinder-logo.png')}
@@ -115,7 +114,7 @@ export default function SignUp() {
                     className="text-base px-0"
                   //accessibilityLabel={t("name_label")}
                   />
-                  <TouchableOpacity onPress={() => setPasswordHidden(!passwordHidden)} className="pr-4">
+                  <TouchableOpacity onPress={() => setPasswordHidden(!passwordHidden)}>
                     <Ionicons
                       name={passwordHidden ? 'eye-outline' : 'eye-off-outline'}
                       size={24}
@@ -135,7 +134,7 @@ export default function SignUp() {
                     className="text-base px-0"
                   //accessibilityLabel={t("name_label")}
                   />
-                  <TouchableOpacity onPress={() => setConfirmPasswordHidden(!confirmPasswordHidden)} className="pr-4">
+                  <TouchableOpacity onPress={() => setConfirmPasswordHidden(!confirmPasswordHidden)}>
                     <Ionicons
                       name={confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'}
                       size={24}

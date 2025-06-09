@@ -15,6 +15,8 @@ const EditProfile = () => {
     const router = useRouter();
     const auth = getAuth();
     const userId = auth.currentUser?.uid;
+    const [id, setId] = useState(userId || '');
+
     const [user, setUser] = useState(auth.currentUser);
     const [username, setUsername] = useState(auth.currentUser?.displayName);
     const [email, setEmail] = useState(auth.currentUser?.email);
@@ -77,19 +79,22 @@ const EditProfile = () => {
             });
             router.push({
                 pathname: '/home',
-                params: { name: name }
+                params: { id: userId }
             });
         } catch (error) {
             console.error("Error saving user details: ", error);
         }
     };
 
-    const formatDate = (date: Date) => {
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
+    // const formatDate = (date: Date) => {
+    //     const day = date.getDate().toString().padStart(2, "0");
+    //     const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    //     const year = date.getFullYear();
+    //     return `${day}/${month}/${year}`;
+    // };
+
+    console.log("User ID:", userId);
+    console.log("dob:", dob);
 
     return (
         <SafeAreaView className="flex flex-col w-full max-w-md mx-auto bg-yellow-50 min-h-screen overflow-y-auto">
@@ -143,7 +148,7 @@ const EditProfile = () => {
                                 <Text>Fecha de nacimiento</Text>
                                 <Text className="text-red-400">*</Text>
                             </View>
-                            <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
+                            {/* <Input action='primary' className="rounded-xl py-2.5 px-3.5" size="xl">
                                 <InputField
                                     className=" text-base px-0"
                                     placeholder="Fecha de nacimiento"
@@ -153,7 +158,7 @@ const EditProfile = () => {
                                     autoCorrect={false}
                                 //accessibilityLabel={t("name_label")}
                                 />
-                            </Input>
+                            </Input> */}
                         </FormControl>
                         <FormControl isRequired>
                             <View className='flex-row items-center mb-2 gap-x-1'>
