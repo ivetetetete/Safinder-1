@@ -171,7 +171,6 @@ module.exports = {
           error: "rgb(var(--color-indicator-error)/<alpha-value>)",
         },
       },
-
       fontFamily: {
         heading: undefined,
         body: undefined,

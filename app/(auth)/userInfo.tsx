@@ -1,27 +1,26 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput, Modal, TouchableWithoutFeedback, FlatList, Alert } from 'react-native';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, Modal, Alert, ScrollView } from 'react-native';
+import { getAuth } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { auth, db } from "../../library/firebaseConfig";
+import { db } from "../../library/firebaseConfig";
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { FormControl } from '@/components/ui/form-control';
 import { Input, InputField } from '@/components/ui/input';
-
 import Select from '@/components/Select';
 import SelectMultiple from '@/components/SelectMultiple';
 import { Button, ButtonText } from '@/components/ui/button';
-import { ScrollView } from 'react-native';
 import { Divider } from '@/components/ui/divider';
 import { Calendar } from 'lucide-react-native';
+import { merge } from 'lodash';
 
 export default function UserInfo() {
     const auth = getAuth();
     const userId = auth.currentUser?.uid;
 
     const router = useRouter();
+    const [id, setId] = useState(userId || '');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [dob, setDob] = useState<Date | null>(null);
@@ -135,10 +134,17 @@ export default function UserInfo() {
 
     //surnamw
     const handleUserData = async () => {
-        if (!name || !dob || !pronouns || !country || !city || !gender || !hobbies) {
+
+        if (!userId) {
+            setErrorMessage("User not authenticated");
+            return;
+        }
+
+        if (!name || !surname || !dob || !pronouns || !country || !city || !gender || !hobbies) {
             setErrorMessage("All fields are required");
             return;
         }
+
 
         try {
             const userDocRef = doc(db, "users", userId as string);
@@ -152,10 +158,10 @@ export default function UserInfo() {
                 city,
                 gender,
                 bio
-            });
+            }, { merge: true });
             router.push({
-                pathname: '/home',
-                params: { name: name }
+                pathname: '/createProfile',
+                params: { id: userId }
             });
 
             console.log("User details saved successfully");
@@ -175,123 +181,116 @@ export default function UserInfo() {
     console.log("Hobbies:", hobbies);
 
     return (
-        // <LinearGradient
-        //     colors={['#ff7db0', '#ffd43b']}
-        //     style={{ flex: 1 }}
-        //     start={{ x: 0, y: 1 }}
-        //     end={{ x: 0, y: 0 }}
-        //     className='h-screen'
-        // >
-            <SafeAreaView className='flex-1 bg-yellow-400'>
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }}
-                    keyboardShouldPersistTaps="handled">
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === "ios" ? "padding" : "height"}
-                        className="flex-1"
-                    >
-                        <Text className="text-2xl p-5 font-bold text-white">Crea tu cuenta</Text>
-                        <View className="bg-white mt-15 p-5">
-                            <View className='mb-2'>
-                                {errorMessage ? (
-                                    <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
-                                ) : null}
-                            </View>
-                            <Text className='text-lg font-bold mb-2 text-neutral-600'>
-                                Información Personal Basica
-                            </Text>
-                            <Divider className="bg-secondary-200" />
+        <SafeAreaView className='flex-1 bg-yellow-50'>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+                keyboardShouldPersistTaps="handled">
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    className="flex-1"
+                >
+                    <Text className="text-4xl p-5 font-bold text-yellow-400">Crea tu cuenta</Text>
+                    <View className="bg-yellow-50 p-5">
+                        <View className='mb-2'>
+                            {errorMessage ? (
+                                <Text className="text-red-500 text-sm mb-4 text-center">{errorMessage}</Text>
+                            ) : null}
+                        </View>
+                        <Text className='text-lg font-bold mb-2 text-neutral-600'>
+                            Información Personal Basica
+                        </Text>
+                        <Divider className="bg-secondary-200" />
 
-                            <View className="gap-y-4 my-3">
+                        <View className="gap-y-4 my-3">
 
-                                <FormControl isRequired>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>Nombre</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-
-                                    <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
-                                        <InputField
-                                            className=" text-base px-0"
-                                            placeholder=""
-                                            value={name}
-                                            onChangeText={setName}
-                                        //accessibilityLabel={t("name_label")}
-                                        />
-                                    </Input>
-                                </FormControl>
-
-                                <FormControl isRequired>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>Apellidos</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-                                    <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
-                                        <InputField
-                                            value={surname}
-                                            onChangeText={setSurname}
-                                            className="text-base px-0"
-                                        //accessibilityLabel={t("name_label")}
-                                        />
-                                    </Input>
-                                </FormControl>
-
-                                <View>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>Fecha de nacimiento</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-                                    <View className="border border-secondary-200  rounded flex-row items-center">
-                                        <TouchableOpacity onPress={openPicker} activeOpacity={1} className="flex-1 flex-row justify-between px-4 py-3">
-                                            <Text className={dob ? "text-black" : "text-neutral-400"}>
-                                                {dob ? formatDate(dob) : "dd/mm/yyyy"}
-                                            </Text>
-                                            <Calendar size={20} color={"#98A2B3"} />
-                                        </TouchableOpacity>
-                                    </View>
+                            <FormControl isRequired>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>Nombre</Text>
+                                    <Text className="text-red-400">*</Text>
                                 </View>
 
-                                {showDatePicker && (
-                                    <Modal
-                                        transparent={true}
-                                        visible={showDatePicker}
-                                        onRequestClose={() => setShowDatePicker(false)}
-                                    >
-                                        <View className="flex-1 justify-center items-center bg-black/50">
-                                            <View className="bg-white p-4 rounded-lg mx-5 items-center">
-                                                <DateTimePicker
-                                                    textColor="orange"
-                                                    accentColor="#ffa876"
-                                                    themeVariant="light"
-                                                    value={tempDob || new Date(2000, 0, 1)}
-                                                    mode="date"
-                                                    display={Platform.OS === "ios" ? "inline" : "default"}
-                                                    onChange={onChangeDob}
-                                                    maximumDate={new Date()}
-                                                />
-                                                <View className="flex flex-row justify-between w-full mt-4 space-x-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="md"
-                                                        onPress={() => setShowDatePicker(false)}
-                                                        className="flex-1"
-                                                    >
-                                                        <ButtonText>Cerrar</ButtonText>
-                                                    </Button>
-                                                    <Button
-                                                        size="md"
-                                                        className="flex-1"
-                                                        onPress={handleAccept}
-                                                    >
-                                                        <ButtonText>Aceptar</ButtonText>
-                                                    </Button>
-                                                </View>
+                                <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
+                                    <InputField
+                                        className=" text-base px-0"
+                                        placeholder=""
+                                        value={name}
+                                        onChangeText={setName}
+                                    //accessibilityLabel={t("name_label")}
+                                    />
+                                </Input>
+                            </FormControl>
+
+                            <FormControl isRequired>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>Apellidos</Text>
+                                    <Text className="text-red-400">*</Text>
+                                </View>
+                                <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
+                                    <InputField
+                                        value={surname}
+                                        onChangeText={setSurname}
+                                        className="text-base px-0"
+                                    //accessibilityLabel={t("name_label")}
+                                    />
+                                </Input>
+                            </FormControl>
+
+                            <View>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>Fecha de nacimiento</Text>
+                                    <Text className="text-red-400">*</Text>
+                                </View>
+                                <View className="border border-secondary-200  rounded flex-row items-center">
+                                    <TouchableOpacity onPress={openPicker} activeOpacity={1} className="flex-1 flex-row justify-between px-4 py-3">
+                                        <Text className={dob ? "text-black" : "text-neutral-400"}>
+                                            {dob ? formatDate(dob) : "dd/mm/yyyy"}
+                                        </Text>
+                                        <Calendar size={20} color={"#98A2B3"} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            {showDatePicker && (
+                                <Modal
+                                    transparent={true}
+                                    visible={showDatePicker}
+                                    onRequestClose={() => setShowDatePicker(false)}
+                                >
+                                    <View className="flex-1 justify-center items-center bg-black/50">
+                                        <View className="bg-white p-4 rounded-lg mx-5 items-center">
+                                            <DateTimePicker
+                                                textColor="orange"
+                                                accentColor="#ffb6d7"
+                                                themeVariant="light"
+                                                value={tempDob || new Date(2000, 0, 1)}
+                                                mode="date"
+                                                display={Platform.OS === "ios" ? "inline" : "default"}
+                                                onChange={onChangeDob}
+                                                maximumDate={new Date()}
+                                            />
+                                            <View className="flex flex-row justify-between w-full mt-4 gap-x-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="md"
+                                                    onPress={() => setShowDatePicker(false)}
+                                                    className="flex-1"
+                                                >
+                                                    <ButtonText>Cerrar</ButtonText>
+                                                </Button>
+                                                <Button
+                                                    size="md"
+                                                    className="flex-1 "
+                                                    onPress={handleAccept}
+                                                >
+                                                    <ButtonText className='text-white'>Aceptar</ButtonText>
+                                                </Button>
                                             </View>
                                         </View>
-                                    </Modal>
-                                )}
+                                    </View>
+                                </Modal>
+                            )}
 
 
-                                {/* <FormControl isRequired>
+                            {/* <FormControl isRequired>
                                     
                                     <Input action='secondary' className="rounded py-2.5 px-3.5" size="xl">
                                         <InputField
@@ -302,134 +301,134 @@ export default function UserInfo() {
                                         />
                                     </Input>
                                 </FormControl> */}
-                                <View>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>Genero</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-
-                                    <View className='flex-row gap-x-2'>
-                                        {genderData.map((item) => {
-                                            const isSelected = gender === item.value;
-                                            return (
-                                                <TouchableOpacity
-                                                    key={item.key}
-                                                    className={`border rounded-lg p-2 ${isSelected
-                                                        ? 'border-secondary-200 bg-secondary-100'
-                                                        : 'border-neutral-200 bg-neutral-200'
-                                                        }`}
-                                                    onPress={() => setGender(item.value)}
-                                                >
-                                                    <Text
-                                                        className={`text-sm ${isSelected ? 'text-neutral-50 font-bold' : 'text-secondary-200'
-                                                            }`}
-                                                    >
-                                                        {item.value}
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            );
-                                        })}
-                                    </View>
+                            <View>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>Genero</Text>
+                                    <Text className="text-red-400">*</Text>
                                 </View>
 
-                                <View>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>Pronombres</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-
-                                    <View className='flex-row gap-x-2'>
-                                        {pronounsData.map((item) => {
-                                            const isSelected = pronouns === item.value;
-                                            return (
-                                                <TouchableOpacity
-                                                    key={item.key}
-                                                    className={`border rounded-lg p-2 ${isSelected
-                                                        ? 'border-secondary-200 bg-secondary-100'
-                                                        : 'border-neutral-200 bg-neutral-200'
+                                <View className='flex-row gap-x-2'>
+                                    {genderData.map((item) => {
+                                        const isSelected = gender === item.value;
+                                        return (
+                                            <TouchableOpacity
+                                                key={item.key}
+                                                className={`rounded-2xl p-2 ${isSelected
+                                                    ? 'border border-secondary-300 bg-secondary-100'
+                                                    : ' bg-tertiary-600'
+                                                    }`}
+                                                onPress={() => setGender(item.value)}
+                                            >
+                                                <Text
+                                                    className={`text-sm text-tertiary-50 ${isSelected ? 'font-bold' : ''
                                                         }`}
-                                                    onPress={() => setPronouns(item.value)}
                                                 >
-                                                    <Text
-                                                        className={`text-sm ${isSelected ? 'text-neutral-50 font-bold' : 'text-secondary-200'
-                                                            }`}
-                                                    >
-                                                        {item.value}
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            );
-                                        })}
-                                    </View>
+                                                    {item.value}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
                                 </View>
                             </View>
 
-                            <Text className='mt-4 text-lg font-bold mb-2 text-neutral-600'>
-                                Información Demográfica
-                            </Text>
-                            <Divider className="bg-secondary-200" />
-                            <View className="gap-y-4 my-3">
-                                <View>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>País</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-                                    <Select
-                                        options={countryData}
-                                        labelKey="value"
-                                        valueKey="key"
-                                        //placeholder="País"
-                                        onSelect={(item) => setCountry(item.key)}
-                                    />
+                            <View>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>Pronombres</Text>
+                                    <Text className="text-red-400">*</Text>
                                 </View>
 
-                                <View>
-                                    <View className='flex-row items-center mb-2 gap-x-1'>
-                                        <Text>Ciudad</Text>
-                                        <Text className="text-red-400">*</Text>
-                                    </View>
-                                    <Select
-                                        options={cityData}
-                                        labelKey="value"
-                                        valueKey="key"
-                                        //placeholder="Ciudad"
-                                        onSelect={(item) => setCity(item.key)}
-                                    />
+                                <View className='flex-row gap-x-2'>
+                                    {pronounsData.map((item) => {
+                                        const isSelected = pronouns === item.value;
+                                        return (
+                                            <TouchableOpacity
+                                                key={item.key}
+                                                className={`rounded-2xl p-2 ${isSelected
+                                                    ? 'border border-secondary-300 bg-secondary-100'
+                                                    : ' bg-tertiary-600'
+                                                    }`}
+                                                onPress={() => setPronouns(item.value)}
+                                            >
+                                                <Text
+                                                    className={`text-sm text-tertiary-50 ${isSelected ? 'font-bold' : ''
+                                                        }`}
+                                                >
+                                                    {item.value}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
                                 </View>
-
                             </View>
+                        </View>
 
-                            <Text className='mt-4 mb-2 text-secondary-200 text-lg font-bold'>
-                                Personal interests
-                            </Text>
-                            <View className="mb-3">
-                                <SelectMultiple
-                                    options={activityOptions}
-                                    labelKey="label"
-                                    valueKey="value"
-                                    placeholder="Select hobbies"
-                                    searchPlaceholder="Search hobbies..."
-                                    onChange={(selected) =>
-                                        setHobbies((selected as { value: string; label: string }[]).map(item => item.value))
-                                    }
+                        <Text className='mt-4 text-lg font-bold mb-2 text-neutral-600'>
+                            Información Demográfica
+                        </Text>
+                        <Divider className="bg-secondary-200" />
+                        <View className="gap-y-4 my-3">
+                            <View>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>País</Text>
+                                    <Text className="text-red-400">*</Text>
+                                </View>
+                                <Select
+                                    options={countryData}
+                                    labelKey="value"
+                                    valueKey="key"
+                                    //placeholder="País"
+                                    onSelect={(item) => setCountry(item.key)}
                                 />
                             </View>
 
-                            <TouchableOpacity
-                                activeOpacity={1}
-                                onPress={handleUserData}
-                                className="bg-secondary-300 mt-6 py-3 rounded-lg"
-                            >
-                                <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
-                            </TouchableOpacity>
-
-                            <View className="flex-row justify-center mt-6">
-                                <Text className="text-gray-400">Already have an account? </Text>
-                                <TouchableOpacity activeOpacity={1} onPress={() => router.push('/login')}>
-                                    <Text className="text-[#FF7DB0] font-bold">Log In</Text>
-                                </TouchableOpacity>
+                            <View>
+                                <View className='flex-row items-center mb-2 gap-x-1'>
+                                    <Text>Ciudad</Text>
+                                    <Text className="text-red-400">*</Text>
+                                </View>
+                                <Select
+                                    options={cityData}
+                                    labelKey="value"
+                                    valueKey="key"
+                                    //placeholder="Ciudad"
+                                    onSelect={(item) => setCity(item.key)}
+                                />
                             </View>
+
                         </View>
-                        {/* <FlatList
+
+                        <Text className='mt-4 mb-2 text-secondary-200 text-lg font-bold'>
+                            Personal interests
+                        </Text>
+                        <View className="mb-3">
+                            <SelectMultiple
+                                options={activityOptions}
+                                labelKey="label"
+                                valueKey="value"
+                                placeholder="Select hobbies"
+                                searchPlaceholder="Search hobbies..."
+                                onChange={(selected) =>
+                                    setHobbies((selected as { value: string; label: string }[]).map(item => item.value))
+                                }
+                            />
+                        </View>
+
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={handleUserData}
+                            className="bg-secondary-300 mt-6 py-3 rounded-lg"
+                        >
+                            <Text className="text-white font-bold text-center text-lg">Sign Up</Text>
+                        </TouchableOpacity>
+
+                        <View className="flex-row justify-center mt-6">
+                            <Text className="text-gray-400">Already have an account? </Text>
+                            <TouchableOpacity activeOpacity={1} onPress={() => router.push('/login')}>
+                                <Text className="text-[#FF7DB0] font-bold">Log In</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    {/* <FlatList
                         data={[]}
                         keyExtractor={() => "dummy"}
                         ListHeaderComponent={
@@ -590,13 +589,9 @@ export default function UserInfo() {
                         }
                         renderItem={() => null} // Safe no-op renderer
                     /> */}
-                    </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
 
-                </ScrollView>
-            </SafeAreaView>
-        //</LinearGradient> 
-
+            </ScrollView>
+        </SafeAreaView>
     );
 }
-
-// you're the smartest 

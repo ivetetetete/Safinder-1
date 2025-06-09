@@ -62,7 +62,7 @@ export default function SelectMultiple({
     <View className={`w-full z-10 ${style}`}>
       {/* Trigger */}
       <TouchableOpacity
-        className="border border-secondary-200 rounded px-4 py-3 bg-white min-h-[48px] flex-row flex-wrap items-center"
+        className="border border-secondary-200 rounded px-4 py-3 bg-yellow-50 min-h-[48px] flex-row flex-wrap items-center"
         onPress={() => setOpen(true)}
         activeOpacity={0.7}
       >
@@ -75,9 +75,9 @@ export default function SelectMultiple({
                 key={item[valueKey]}
                 className="bg-secondary-100 rounded-full px-3 py-1 flex-row items-center mr-2 mb-1"
               >
-                <Text className="text-neutral-500 mr-2 text-sm">{item[labelKey]}</Text>
+                <Text className="text-white font-semibold mr-2 text-sm">{item[labelKey]}</Text>
                 <TouchableOpacity onPress={() => removeTag(item)}>
-                  <Text className="text-neutral-500 text-lg">×</Text>
+                  <Text className="text-white text-lg">×</Text>
                 </TouchableOpacity>
               </View>
             ))}

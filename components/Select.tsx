@@ -61,7 +61,7 @@ export default function Select({
     <View className={`w-full ${style}`}>
       {/* Trigger */}
       <TouchableOpacity
-        className="flex flex-row justify-between border border-secondary-200 rounded px-4 py-3 bg-white"
+        className="flex flex-row justify-between border border-secondary-200 rounded px-4 py-3 bg-yellow-50"
         onPress={toggleDropdown}
         activeOpacity={0.7}
       >
@@ -74,7 +74,7 @@ export default function Select({
 
       {/* Animated Dropdown */}
       <Animated.View
-        className="overflow-hidden bg-white rounded shadow border border-secondary-200"
+        className="overflow-hidden bg-yellow-50 rounded shadow border border-secondary-200"
         style={{
           height: animatedHeight,
           marginTop: open ? 4 : 0,
