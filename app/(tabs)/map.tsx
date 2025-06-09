@@ -14,7 +14,7 @@ import { getAuth } from "firebase/auth";
 import "tailwindcss/tailwind.css";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import {
   updateDoc,
   doc,
@@ -29,6 +29,7 @@ import InputLocation from "@/components/InputLocation";
 import {
   Calendar,
   CalendarDays,
+  Clock,
   MapPinned,
   Volleyball,
 } from "lucide-react-native";
@@ -58,6 +59,9 @@ const MapScreen = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date(2000, 0, 1, 12, 0));
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date(2000, 0, 1, 12, 0));
   const [selectedAddress, setSelectedAddress] = useState("");
@@ -68,6 +72,11 @@ const MapScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+
+  //temporales fecha y hora
+  const [tempDate, setTempDate] = useState<Date | null>(null);
+  const [tempTime, setTempTIme] = useState<Date | null>(null);
+
   const [loading, setLoading] = useState(true);
 
   const toggleModal = () => setIsModalVisible(!isModalVisible);
@@ -117,35 +126,49 @@ const MapScreen = () => {
     fetchEvents();
   }, []);
 
-  useEffect(() => {
-    //console.log('Events state updated:', events);
-  }, [events]);
-
   const handleMarkerPress = (event: Event) => {
     setSelectedEvent(event);
     setIsModalEventVisible(!isModalEventVisible);
   };
 
-  const onChangeDate = (event: any, selected: Date | undefined) => {
-    const currentDate = selected || selectedDate;
-    setSelectedDate(currentDate);
+  const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    console.log('entras aqui? selectedDate:', selectedDate);
+    if (selectedDate) {
+      setTempDate(selectedDate);
+    }
+    // Don't close modal here!
   };
 
-  const onChangeTime = (event: any, selected: Date | undefined) => {
-    const currentTime = selected || selectedTime;
+  const handleAcceptDate = () => {
+    if (tempDate) setDate(tempDate);
+    setShowDatePicker(false);
+  };
+
+  const onChangeTime = (event: DateTimePickerEvent, selectedTime?: Date) => {
+    if (selectedTime) {
+      setTempTIme(selectedTime);
+    }
+    // Don't close modal here!
+  };
+
+  const handleAcceptTime = () => {
+    if (tempTime) setTime(tempTime);
     setShowTimePicker(false);
-    setSelectedTime(currentTime);
   };
 
   const openPickerDate = () => {
-    setSelectedDate(selectedDate || new Date(2000, 0, 1));
+    setTempDate(date || new Date());
     setShowDatePicker(true);
   };
 
   const openPickerTime = () => {
-    setSelectedTime(selectedTime || new Date(2000, 0, 1, 12, 0)); // Default time set to 12:00 PM
+    console.log('funcionas aqui? selectedTime:', selectedTime);
+    setTempDate(time || new Date(2000, 0, 1, 12, 0));
     setShowTimePicker(true);
+        console.log('y aqui:', selectedTime);
+
   };
+
 
   const formatDate = (date: Date) => {
     const day = date.getDate().toString().padStart(2, "0");
@@ -178,8 +201,8 @@ const MapScreen = () => {
       address: selectedAddress,
       latitude: selectedLat,
       longitude: selectedLon,
-      date: selectedDate.toDateString(),
-      hour: selectedTime.toTimeString().slice(0, 5),
+      date: date.toDateString(),
+      hour: time.toTimeString().slice(0, 5),
       userId: userId,
       joiners_id: [userId],
     };
@@ -210,8 +233,8 @@ const MapScreen = () => {
       ]);
       setTitle("");
       setDescription("");
-      setSelectedDate(new Date());
-      setSelectedTime(new Date());
+      setDate(new Date());
+      setTime(new Date());
       setSelectedAddress("");
       setSelectedLat(0);
       setSelectedLon(0);
@@ -287,16 +310,16 @@ const MapScreen = () => {
                     <Text className="text-sm text-neutral-400">
                       {selectedEvent?.date
                         ? capitalize(
-                            new Date(selectedEvent.date).toLocaleDateString(
-                              "es-ES",
-                              {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              }
-                            )
+                          new Date(selectedEvent.date).toLocaleDateString(
+                            "es-ES",
+                            {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            }
                           )
+                        )
                         : ""}{" "}
                       {selectedEvent?.hour}
                     </Text>
@@ -369,16 +392,14 @@ const MapScreen = () => {
                     >
                       <InputField
                         className=" text-base px-0"
-                        placeholder="Escribe un título"
                         value={title}
                         onChangeText={setTitle}
-                        //accessibilityLabel={t("name_label")}
+                      //accessibilityLabel={t("name_label")}
                       />
                     </Input>
                   </FormControl>
                   <FormControl isRequired>
                     <Text className="font-semibold mb-1">Descripción</Text>
-
                     <Input
                       action="secondary"
                       className="rounded-xl py-2.5 px-3.5"
@@ -386,10 +407,9 @@ const MapScreen = () => {
                     >
                       <InputField
                         className=" text-base px-0"
-                        placeholder="Escribe una descripción"
                         value={description}
                         onChangeText={setDescription}
-                        //accessibilityLabel={t("name_label")}
+                      //accessibilityLabel={t("name_label")}
                       />
                     </Input>
                   </FormControl>
@@ -407,18 +427,18 @@ const MapScreen = () => {
                   />
 
                   <Text className="font-semibold">Seleccionar fecha</Text>
-                  <View className="border border-secondary-200  rounded flex-row items-center">
+                  <View className="border border-secondary-200 flex-row items-center rounded-xl">
                     <TouchableOpacity
                       onPress={openPickerDate}
                       activeOpacity={1}
-                      className="flex-1 flex-row justify-between px-4 py-3"
+                      className="flex-1 flex-row justify-between px-4 py-3 "
                     >
                       <Text
                         className={
-                          selectedDate ? "text-black" : "text-neutral-400"
+                          date ? "text-black" : "text-neutral-400"
                         }
                       >
-                        {selectedDate ? formatDate(selectedDate) : "dd/mm/yyyy"}
+                        {date ? formatDate(date) : "dd/mm/yyyy"}
                       </Text>
                       <Calendar size={20} color={"#98A2B3"} />
                     </TouchableOpacity>
@@ -436,7 +456,7 @@ const MapScreen = () => {
                             textColor="orange"
                             accentColor="#ffa876"
                             themeVariant="light"
-                            value={selectedDate || new Date()}
+                            value={tempDate || new Date()}
                             mode="date"
                             display={
                               Platform.OS === "ios" ? "inline" : "default"
@@ -444,13 +464,21 @@ const MapScreen = () => {
                             onChange={onChangeDate}
                             minimumDate={new Date()}
                           />
-                          <View className="flex flex-row justify-between w-full mt-4 space-x-2">
+                          <View className="flex flex-row justify-between w-full mt-4 gap-x-2">
+                            <Button
+                              variant="outline"
+                              size="md"
+                              onPress={() => setShowDatePicker(false)}
+                              className="flex-1"
+                            >
+                              <ButtonText>Cerrar</ButtonText>
+                            </Button>
                             <Button
                               size="md"
-                              className="flex-1"
-                              onPress={() => setShowDatePicker(false)}
+                              className="flex-1 "
+                              onPress={handleAcceptDate}
                             >
-                              <ButtonText>Aceptar</ButtonText>
+                              <ButtonText className='text-white'>Aceptar</ButtonText>
                             </Button>
                           </View>
                         </View>
@@ -459,7 +487,7 @@ const MapScreen = () => {
                   )}
 
                   <Text className="font-semibold">Seleccionar hora</Text>
-                  <View className="border border-secondary-200  rounded flex-row items-center">
+                  <View className="border border-secondary-200 flex-row items-center rounded-xl">
                     <TouchableOpacity
                       onPress={openPickerTime}
                       activeOpacity={1}
@@ -467,14 +495,14 @@ const MapScreen = () => {
                     >
                       <Text
                         className={
-                          selectedTime ? "text-black" : "text-neutral-400"
+                          time ? "text-black" : "text-neutral-400"
                         }
                       >
-                        {selectedTime
-                          ? selectedTime.toTimeString().slice(0, 5)
+                        {time
+                          ? time.toTimeString().slice(0, 5)
                           : "HH:mm"}
                       </Text>
-                      <Calendar size={20} color={"#98A2B3"} />
+                      <Clock size={20} color={"#98A2B3"} />
                     </TouchableOpacity>
                   </View>
 
@@ -489,19 +517,27 @@ const MapScreen = () => {
                           <DateTimePicker
                             accentColor="#ffa876"
                             themeVariant="light"
-                            value={selectedTime} // Default time set to 12:00 PM
+                            value={tempTime || new Date(2000, 0, 1, 12, 0)}
                             mode="time"
                             is24Hour={true}
                             display={"spinner"}
                             onChange={onChangeTime}
                           />
-                          <View className="flex flex-row justify-between w-full mt-4 space-x-2">
+                          <View className="flex flex-row justify-between w-full mt-4 gap-x-2">
+                            <Button
+                              variant="outline"
+                              size="md"
+                              onPress={() => setShowTimePicker(false)}
+                              className="flex-1"
+                            >
+                              <ButtonText>Cerrar</ButtonText>
+                            </Button>
                             <Button
                               size="md"
-                              className="flex-1"
-                              onPress={() => setShowTimePicker(false)}
+                              className="flex-1 "
+                              onPress={handleAcceptTime}
                             >
-                              <ButtonText>Aceptar</ButtonText>
+                              <ButtonText className='text-white'>Aceptar</ButtonText>
                             </Button>
                           </View>
                         </View>
