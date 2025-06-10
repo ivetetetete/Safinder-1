@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   Modal,
-  TextInput,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
@@ -31,11 +30,14 @@ import {
   CalendarDays,
   Clock,
   MapPinned,
+  PartyPopper,
+  Utensils,
   Volleyball,
 } from "lucide-react-native";
 import { FormControl } from "@/components/ui/form-control";
 import { Input, InputField } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
+import Toast from 'react-native-toast-message';
 
 interface Event {
   id: string;
@@ -54,16 +56,13 @@ const MapScreen = () => {
   const authInstance = getAuth();
   const user = authInstance.currentUser;
 
-  //console.log("User:", user);
-  //console.log("userIdName:", user?.uid);
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date(2000, 0, 1, 12, 0));
+  const [time, setTime] = useState(new Date());
+  const [eventType, setEventType] = useState<React.ReactElement | string>();
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(new Date(2000, 0, 1, 12, 0));
+
   const [selectedAddress, setSelectedAddress] = useState("");
   const [selectedLat, setSelectedLat] = useState<number>(0);
   const [selectedLon, setSelectedLon] = useState<number>(0);
@@ -75,7 +74,7 @@ const MapScreen = () => {
 
   //temporales fecha y hora
   const [tempDate, setTempDate] = useState<Date | null>(null);
-  const [tempTime, setTempTIme] = useState<Date | null>(null);
+  const [tempTime, setTempTime] = useState<Date | null>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -114,7 +113,6 @@ const MapScreen = () => {
           });
         });
 
-        //console.log('Fetched events:', fetchedEvents);
         setEvents(fetchedEvents);
       } catch (error) {
         console.error("Error fetching events: ", error);
@@ -136,7 +134,6 @@ const MapScreen = () => {
     if (selectedDate) {
       setTempDate(selectedDate);
     }
-    // Don't close modal here!
   };
 
   const handleAcceptDate = () => {
@@ -146,9 +143,8 @@ const MapScreen = () => {
 
   const onChangeTime = (event: DateTimePickerEvent, selectedTime?: Date) => {
     if (selectedTime) {
-      setTempTIme(selectedTime);
+      setTempTime(selectedTime);
     }
-    // Don't close modal here!
   };
 
   const handleAcceptTime = () => {
@@ -157,16 +153,16 @@ const MapScreen = () => {
   };
 
   const openPickerDate = () => {
+    setShowTimePicker(false);
+
     setTempDate(date || new Date());
     setShowDatePicker(true);
   };
 
   const openPickerTime = () => {
-    console.log('funcionas aqui? selectedTime:', selectedTime);
-    setTempDate(time || new Date(2000, 0, 1, 12, 0));
+    setShowDatePicker(false);
+    setTempTime(time || new Date());
     setShowTimePicker(true);
-        console.log('y aqui:', selectedTime);
-
   };
 
 
@@ -238,7 +234,16 @@ const MapScreen = () => {
       setSelectedAddress("");
       setSelectedLat(0);
       setSelectedLon(0);
+      console.log("GRUPO DE CHAT CREADO ");
+      Toast.show({
+        type: 'success',
+        text1: 'Tu evento se ha creado correctamente',
+        text2: 'Se ha creado un grupo en el chat para tu evento',
+        position: 'bottom',
+        visibilityTime: 2000,
+      });
       toggleModal();
+
     } catch (error) {
       console.error("Create Event Error: ", error);
     }
@@ -246,7 +251,22 @@ const MapScreen = () => {
 
   function capitalize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+  };
+
+  const typeEvents = [
+    {
+      icon: <Volleyball size={20} color="black" />,
+      label: "Deporte",
+    },
+    {
+      icon: <PartyPopper size={20} color="black" />,
+      label: "Fiesta",
+    },
+    {
+      icon: <Utensils size={20} color="black" />,
+      label: "Restaurante",
+    },
+  ];
 
   return (
     <>
@@ -280,7 +300,7 @@ const MapScreen = () => {
                   <Text className="text-center font-bold">{event.title}</Text>
                   {/* <Text className='text-center'>{event.description}</Text> */}
                   <View className="rounded-full  bg-tertiary-400 p-2 mx-auto">
-                    <Volleyball size={16} color="white" />
+                    {eventType}
                   </View>
                 </View>
               </Marker>
@@ -400,18 +420,16 @@ const MapScreen = () => {
                   </FormControl>
                   <FormControl isRequired>
                     <Text className="font-semibold mb-1">Descripción</Text>
-                    <Input
-                      action="secondary"
-                      className="rounded-xl py-2.5 px-3.5"
-                      size="xl"
-                    >
+                    <Input action="secondary" className="rounded-xl py-2.5 px-3.5 h-40 items-start" size="xl">
                       <InputField
-                        className=" text-base px-0"
+                        multiline
+                        className="text-base px-0 h-full" // h-full to fill the parent Input height
                         value={description}
                         onChangeText={setDescription}
-                      //accessibilityLabel={t("name_label")}
+                      // accessibilityLabel={t("name_label")}
                       />
                     </Input>
+
                   </FormControl>
 
                   <InputLocation
@@ -517,7 +535,7 @@ const MapScreen = () => {
                           <DateTimePicker
                             accentColor="#ffa876"
                             themeVariant="light"
-                            value={tempTime || new Date(2000, 0, 1, 12, 0)}
+                            value={tempTime instanceof Date ? tempTime : new Date()}
                             mode="time"
                             is24Hour={true}
                             display={"spinner"}
@@ -545,6 +563,26 @@ const MapScreen = () => {
                     </Modal>
                   )}
 
+                  <Text>Tipo de evento</Text>
+                  <View className="flex flex-row flex-wrap gap-3 mt-2">
+                    {typeEvents.map((type, index) => {
+                      const isSelected = eventType === type.label;
+
+                      return (
+                        <TouchableOpacity
+                          key={index}
+                          className={`flex flex-row items-center gap-x-2 border border-secondary-200 rounded-xl px-4 py-2 ${isSelected ? 'bg-secondary-100' : 'bg-white'}`}
+                          onPress={() => {
+                            setEventType(type.label);
+                          }}
+                        >
+                          {type.icon}
+                          <Text className="text-sm">{type.label}</Text>
+                        </TouchableOpacity>
+                      )
+                    })}
+                  </View>
+
                   <TouchableOpacity
                     className="w-full mt-6 bg-black justify-center items-center h-12 rounded-lg"
                     onPress={createEvent}
@@ -570,3 +608,4 @@ const MapScreen = () => {
 };
 
 export default MapScreen;
+2000

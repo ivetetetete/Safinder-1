@@ -32,7 +32,7 @@ interface Props {
     className?: string;
 }
 
-const InputLocation: React.FC<Props> = ({
+const InputLocationCountry: React.FC<Props> = ({
     selectedAddress,
     setSelectedAddress,
     onSelect,
@@ -101,7 +101,7 @@ const InputLocation: React.FC<Props> = ({
 
         setIsLoading(true);
         try {
-            const res = await axios.get('https://nominatim.openstreetmap.org/search', {
+            const res = await axios.get('https://nominatim.openstreetmap.org/search?featureType=country', {
                 params: {
                     q: inputText,
                     format: 'json',
@@ -275,7 +275,7 @@ const InputLocation: React.FC<Props> = ({
     );
 };
 
-export default InputLocation;
+export default InputLocationCountry;
 
 const styles = StyleSheet.create({
     container: {

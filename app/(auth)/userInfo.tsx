@@ -8,12 +8,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { FormControl } from '@/components/ui/form-control';
 import { Input, InputField } from '@/components/ui/input';
-import Select from '@/components/Select';
 import SelectMultiple from '@/components/SelectMultiple';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
 import { Calendar } from 'lucide-react-native';
-import { merge } from 'lodash';
+import InputLocationCity from '@/components/InputLocationCity';
+import InputLocationCountry from '@/components/InputLocationCountry';
+import { countryToAlpha2 } from "country-to-iso";
 
 export default function UserInfo() {
     const auth = getAuth();
@@ -46,42 +47,6 @@ export default function UserInfo() {
     const pronounsData = [
         { key: "S", value: "She/Her" },
         { key: "T", value: "They/Them" },
-    ];
-
-    const countryData = [
-        { key: "US", value: "United States" },
-        { key: "FR", value: "France" },
-        { key: "BR", value: "Brazil" },
-        { key: "JP", value: "Japan" },
-        { key: "ZA", value: "South Africa" },
-        { key: "IN", value: "India" },
-        { key: "AU", value: "Australia" },
-        { key: "CA", value: "Canada" },
-        { key: "DE", value: "Germany" },
-        { key: "EG", value: "Egypt" },
-        { key: "IT", value: "Italy" },
-        { key: "MX", value: "Mexico" },
-        { key: "NG", value: "Nigeria" },
-        { key: "RU", value: "Russia" },
-        { key: "ES", value: "Spain" },
-        { key: "GB", value: "United Kingdom" },
-    ];
-
-    const cityData = [
-        { key: "tokyo", value: "Tokyo" },
-        { key: "delhi", value: "Delhi" },
-        { key: "shanghai", value: "Shanghai" },
-        { key: "sao_paulo", value: "São Paulo" },
-        { key: "mexico_city", value: "Mexico City" },
-        { key: "cairo", value: "Cairo" },
-        { key: "dhaka", value: "Dhaka" },
-        { key: "mumbai", value: "Mumbai" },
-        { key: "beijing", value: "Beijing" },
-        { key: "osaka", value: "Osaka" },
-        { key: "chongqing", value: "Chongqing" },
-        { key: "karachi", value: "Karachi" },
-        { key: "kinshasa", value: "Kinshasa" },
-        { key: "lagos", value: "Lagos" },
     ];
 
     const activityOptions = [
@@ -179,6 +144,11 @@ export default function UserInfo() {
     console.log("Pronouns:", pronouns);
     console.log("Username:", username);
     console.log("Hobbies:", hobbies);
+
+    const countryCode = countryToAlpha2(country); // returns "US"
+    const countryLower = countryCode?.toLowerCase();
+
+    console.log("Country Code:", countryLower);
 
     return (
         <SafeAreaView className='flex-1 bg-yellow-50'>
@@ -372,12 +342,21 @@ export default function UserInfo() {
                                     <Text>País</Text>
                                     <Text className="text-red-400">*</Text>
                                 </View>
-                                <Select
+                                {/* <Select
                                     options={countryData}
                                     labelKey="value"
                                     valueKey="key"
                                     //placeholder="País"
                                     onSelect={(item) => setCountry(item.key)}
+                                /> */}
+                                <InputLocationCountry
+                                    selectedAddress={country}
+                                    setSelectedAddress={setCountry}
+                                    onSelect={(country) => {
+                                        setCountry(country);
+                                    }}
+                                    label="País"
+                                    placeholder="Escribe un país"
                                 />
                             </View>
 
@@ -386,13 +365,23 @@ export default function UserInfo() {
                                     <Text>Ciudad</Text>
                                     <Text className="text-red-400">*</Text>
                                 </View>
-                                <Select
+                                <InputLocationCity
+                                    selectedAddress={city}
+                                    setSelectedAddress={setCity}
+                                    paramCountry={countryLower}
+                                    onSelect={(city) => {
+                                        setCity(city);
+                                    }}
+                                    label="Ciudad"
+                                    placeholder="Escribe una ciudad"
+                                />
+                                {/* <Select
                                     options={cityData}
                                     labelKey="value"
                                     valueKey="key"
                                     //placeholder="Ciudad"
                                     onSelect={(item) => setCity(item.key)}
-                                />
+                                /> */}
                             </View>
 
                         </View>

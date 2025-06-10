@@ -11,26 +11,17 @@ export default function HomeScreen() {
   const router = useRouter();
   const auth = getAuth();
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.replace('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-
   const [answers, setAnswers] = useState<Record<number, string | undefined>>({});
   const handleSelect = (questionId: any, optionKey: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: optionKey }));
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary-600">
+    <SafeAreaView className="flex-1 bg-yellow-50">
       <View className='p-5'>
-        <Text className='font-bold text-xl'>Cuestionario</Text>
+        <Text className='font-bold text-3xl text-primary-600'>Cuestionario</Text>
       </View>
-      <ScrollView className='bg-yellow-50'>
+      <ScrollView >
         <View className='px-5 mt-5'>
           {/* <View className="bg-pink-500 p-5 rounded-xl my-3">
             <Text className="text-white text-2xl">Countdown to next test:</Text>

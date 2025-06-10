@@ -24,6 +24,7 @@ interface LocationPrediction {
 interface Props {
     onSelect?: (address: string, latitude?: string, longitude?: string) => void;
     selectedAddress: string;
+    paramCountry?: string;
     setSelectedAddress: (address: string) => void;
     placeholder: string;
     searchDelay?: number;
@@ -32,9 +33,10 @@ interface Props {
     className?: string;
 }
 
-const InputLocation: React.FC<Props> = ({
+const InputLocationCity: React.FC<Props> = ({
     selectedAddress,
     setSelectedAddress,
+    paramCountry,
     onSelect,
     placeholder,
     searchDelay = 300,
@@ -101,7 +103,7 @@ const InputLocation: React.FC<Props> = ({
 
         setIsLoading(true);
         try {
-            const res = await axios.get('https://nominatim.openstreetmap.org/search', {
+            const res = await axios.get(`https://nominatim.openstreetmap.org/search?featureType=city&countrycodes=${paramCountry}`, {
                 params: {
                     q: inputText,
                     format: 'json',
@@ -118,6 +120,8 @@ const InputLocation: React.FC<Props> = ({
                 },
                 cancelToken: cancelTokenRef.current.token,
             });
+
+            console.log('Nominatim response:', res.data);
 
             searchCache.current[cacheKey] = res.data;
             setPredictions(res.data);
@@ -275,7 +279,7 @@ const InputLocation: React.FC<Props> = ({
     );
 };
 
-export default InputLocation;
+export default InputLocationCity;
 
 const styles = StyleSheet.create({
     container: {
